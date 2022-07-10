@@ -1,0 +1,21 @@
+<component name="libraryTable">
+  <library name="library">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/library/mysql-connector-java-5.1.48-bin.jar!/" />
+      <root url="jar://$PROJECT_DIR$/library/commons-logging-1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/library/httpcore-4.4.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/library/javax.servlet-api-4.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/library/fluent-hc-4.5.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/library/javax.mail.jar!/" />
+      <root url="jar://$PROJECT_DIR$/library/jbcrypt-0.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/library/activation-jaf1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/library/javax.mail-1.6.2 .jar!/" />
+      <root url="jar://$PROJECT_DIR$/library/mysql-connector-java-5.1.48.jar!/" />
+      <root url="jar://$PROJECT_DIR$/library/gson-2.8.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/library/httpclient-4.5.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/library/javax.mail-api-1.6.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
