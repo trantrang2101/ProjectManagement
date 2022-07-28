@@ -44,7 +44,7 @@ public class MilestoneDAO extends ConnectJDBC {
 
     public int addMilestone(Milestone m) {
         int check = -1;
-        String sql = "INSERT INTO `studentmanagement`.`milestone` (`milestone_name`, `iteration_id`, `class_id`, `from_date`, `to_date`,`status`) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO `milestone` (`milestone_name`, `iteration_id`, `class_id`, `from_date`, `to_date`,`status`) VALUES (?, ?, ?, ?, ?, ?)";
         try {
             Connection conn = getConnection();
             PreparedStatement pre = conn.prepareStatement(sql);
@@ -59,7 +59,7 @@ public class MilestoneDAO extends ConnectJDBC {
             pre.setString(5, m.getTo_date());
             pre.setInt(6, m.getStatus());
             if (pre.executeUpdate() > 0) {
-                ResultSet rs = getData("SELECT milestone_id from `studentmanagement`.`milestone` order by milestone_id desc limit 1");
+                ResultSet rs = getData("SELECT milestone_id from `milestone` order by milestone_id desc limit 1");
                 if (rs.next()) {
                     check = rs.getInt(1);
                 }
@@ -72,7 +72,7 @@ public class MilestoneDAO extends ConnectJDBC {
     }
     public int checkAddMilestone(int milestone_id, String milestone_name) {
         int check = -1;
-        String sql = "SELECT * FROM studentmanagement.function where milestone_id = " + milestone_id + " and milestone_name='" + milestone_name + "'";
+        String sql = "SELECT * from `function` where milestone_id = " + milestone_id + " and milestone_name='" + milestone_name + "'";
 
         try {
             ResultSet rs = getData(sql);
@@ -88,7 +88,7 @@ public class MilestoneDAO extends ConnectJDBC {
 
     public int checkTitle(String title) {
         int set = -1;
-        String sql = "SELECT milestone_id from `studentmanagement`.`milestone` where milestone_name = '" + title + "'";
+        String sql = "SELECT milestone_id from `milestone` where milestone_name = '" + title + "'";
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -103,7 +103,7 @@ public class MilestoneDAO extends ConnectJDBC {
 
     public Milestone getMilestone(int id) {
         Milestone set = null;
-        String sql = "SELECT * from `studentmanagement`.`milestone` where milestone_id=" + id;
+        String sql = "SELECT * from `milestone` where milestone_id=" + id;
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -125,7 +125,7 @@ public class MilestoneDAO extends ConnectJDBC {
 
     public boolean updateMilestone(int milestone_id, int status) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`milestone` \n"
+        String sql = "UPDATE `milestone` \n"
                 + "SET status=?\n"
                 + "where milestone_id=?";
         try {
@@ -143,7 +143,7 @@ public class MilestoneDAO extends ConnectJDBC {
 
     public boolean updateMilestone(Milestone m) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`milestone` \n"
+        String sql = "UPDATE `milestone` \n"
                 + "SET milestone_name=?, from_date=?, to_date=?, status=?,iteration_id=? "
                 + "where milestone_id=?";
         try {
@@ -169,8 +169,8 @@ public class MilestoneDAO extends ConnectJDBC {
     
     public List<Milestone> getList(Integer classFilter, Integer iterationFilter, Integer statusFilter, User user, String search, int start, int limit, String sort, boolean statusSort) {
         List<Milestone> list = new ArrayList<>();
-        String sql = "CALL `studentmanagement`.search('\\'%" + search + "%\\'','studentmanagement','milestone','" + (classFilter != null ? " and class_id = " + classFilter : "") + (iterationFilter != null ? " and iteration_id=" + iterationFilter : "")
-                + (user.getRole_id() == 1 ? "" : user.getRole_id() == 3 ? " and class_id in (select class_id from `studentmanagement`.`class` where trainer_id=" + user.getUser_id() + ")" : (user.getRole_id() == 4 ? " and class_id in (select class_id from `studentmanagement`.`class_user` where user_id=" + user.getUser_id() + ")" : " and class_id in (select class_id from `studentmanagement`.`class`,`studentmanagement`.`subject` where class.subject_id=subject.subject_id and author_id=" + user.getUser_id() + ")"))
+        String sql = "CALL search('\\'%" + search + "%\\'','milestone','" + (classFilter != null ? " and class_id = " + classFilter : "") + (iterationFilter != null ? " and iteration_id=" + iterationFilter : "")
+                + (user.getRole_id() == 1 ? "" : user.getRole_id() == 3 ? " and class_id in (select class_id from `class` where trainer_id=" + user.getUser_id() + ")" : (user.getRole_id() == 4 ? " and class_id in (select class_id from `class_user` where user_id=" + user.getUser_id() + ")" : " and class_id in (select class_id from `class`,`subject` where class.subject_id=subject.subject_id and author_id=" + user.getUser_id() + ")"))
                 + (statusFilter != null ? " and status=" + statusFilter : "") + "'," + start + "," + limit + ",'" + sort + "'," + statusSort + ")";
         ResultSet rs1 = getData(sql);
         try {

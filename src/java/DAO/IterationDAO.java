@@ -37,7 +37,7 @@ public class IterationDAO extends ConnectJDBC {
 
     public Iteration getIteration(int id) {
         Iteration iter = null;
-        String sql = "SELECT * from `studentmanagement`.`iteration` where iteration_id=" + id;
+        String sql = "SELECT * from `iteration` where iteration_id=" + id;
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -85,8 +85,8 @@ public class IterationDAO extends ConnectJDBC {
 
     public List<Iteration> getList(Integer subject_id, User login, String search, int start, int limit, String sort, boolean statusSort, Boolean statusFilter) {
         List<Iteration> list = new ArrayList<>();
-        String sql = "CALL `studentmanagement`.search('\\'%" + search + "%\\'','studentmanagement','iteration','"
-                + (login == null || login.getRole_id() == 1 ? "" : " and status=1 ".concat(login.getRole_id() == 2 ? " and subject_id in (select subject_id from `studentmanagement`.`subject` where author_id=" + login.getUser_id() + ")" : " and subject_id in (select subject_id from `studentmanagement`.`class` where trainer_id=" + login.getUser_id() + ")"))
+        String sql = "CALL search('\\'%" + search + "%\\'','iteration','"
+                + (login == null || login.getRole_id() == 1 ? "" : " and status=1 ".concat(login.getRole_id() == 2 ? " and subject_id in (select subject_id from `subject` where author_id=" + login.getUser_id() + ")" : " and subject_id in (select subject_id from `class` where trainer_id=" + login.getUser_id() + ")"))
                 + (subject_id == null || subject_id == 0 ? "" : " and subject_id = " + subject_id)
                 + (statusFilter == null ? "" : " and status = " + statusFilter)
                 + "'," + start + "," + limit + ",'" + sort + "'," + statusSort + ")";
@@ -118,7 +118,7 @@ public class IterationDAO extends ConnectJDBC {
 
     public int addIteration(Iteration iter) {
         int id = -1;
-        String sql = "INSERT INTO `studentmanagement`.`iteration` (`iteration_id`, `subject_id`, `iteration_name`, `duration`,`description`, `status`) VALUES (?, ?, ?, ?,?, ?);";
+        String sql = "INSERT INTO `iteration` (`iteration_id`, `subject_id`, `iteration_name`, `duration`,`description`, `status`) VALUES (?, ?, ?, ?,?, ?);";
         try {
             Connection conn = getConnection();
             PreparedStatement pre = conn.prepareStatement(sql);
@@ -130,7 +130,7 @@ public class IterationDAO extends ConnectJDBC {
             pre.setBoolean(6, iter.isStatus());
 
             if (pre.executeUpdate() > 0) {
-                ResultSet rs = getData("SELECT iteration_id from `studentmanagement`.`iteration` order by iteration_id desc limit 1");
+                ResultSet rs = getData("SELECT iteration_id from `iteration` order by iteration_id desc limit 1");
                 if (rs.next()) {
                     id = rs.getInt(1);
                 }
@@ -144,7 +144,7 @@ public class IterationDAO extends ConnectJDBC {
 
     public boolean checkAddIter(String subjectID, String iterationName) {
         boolean check = false;
-        String sql = "SELECT * FROM studentmanagement.iteration where subject_id = '" + subjectID + "'and iteration_name='" + iterationName + "'";
+        String sql = "SELECT * FROM iteration where subject_id = '" + subjectID + "'and iteration_name='" + iterationName + "'";
 
         try {
             ResultSet rs = getData(sql);
@@ -160,7 +160,7 @@ public class IterationDAO extends ConnectJDBC {
 
     public boolean updateStatus(int iterId, boolean status) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`iteration` \n"
+        String sql = "UPDATE `iteration` \n"
                 + "SET status=?\n"
                 + "where iteration_id=?";
         try {
@@ -178,7 +178,7 @@ public class IterationDAO extends ConnectJDBC {
 
     public boolean updateIteration(Iteration s) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`iteration` \n"
+        String sql = "UPDATE `iteration` \n"
                 + "            SET `subject_id`=?,`iteration_name`=?, `duration`=?,`description`=?, `status`=?\n"
                 + "             where `iteration_id`=?";
         try {

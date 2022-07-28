@@ -144,8 +144,8 @@
                                                                 </div>
                                                                 <div class="modal-footer">
 
-                                                                   <input type="reset" class="btn btn-light" data-bs-dismiss="modal" value="Close"></input>
-                                                   
+                                                                    <input type="reset" class="btn btn-light" data-bs-dismiss="modal" value="Close"></input>
+
                                                                     <a href="subject?id=${subjectChoose.getSubject_id()}&status=${subjectChoose.isStatus()}&service=changeStatus" class="btn btn-primary">Change</a>
                                                                 </div>
                                                             </div>

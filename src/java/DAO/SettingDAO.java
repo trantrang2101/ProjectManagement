@@ -36,7 +36,7 @@ public class SettingDAO extends ConnectJDBC {
 
     public Setting getSetting(String title) {
         Setting set = null;
-        String sql = "SELECT * from `studentmanagement`.`setting` where setting_title like '%" + title + "%'";
+        String sql = "SELECT * from `setting` where setting_title like '%" + title + "%'";
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -58,7 +58,7 @@ public class SettingDAO extends ConnectJDBC {
 
     public Setting getSetting(int id) {
         Setting set = null;
-        String sql = "SELECT * from `studentmanagement`.`setting` where setting_id=" + id;
+        String sql = "SELECT * from `setting` where setting_id=" + id;
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -80,7 +80,7 @@ public class SettingDAO extends ConnectJDBC {
 
     public List<Setting> getList(Integer type, Boolean statusFilter, String search, int start, int limit, String sort, boolean statusSort) {
         List<Setting> list = new ArrayList<>();
-        String sql = "CALL `studentmanagement`.search('\\'%" + search + "%\\'','studentmanagement','setting','" + (type == null ? "" : " and type_id = " + type) + (statusFilter != null ? " and status=" + statusFilter : "")
+        String sql = "CALL search('\\'%" + search + "%\\'','setting','" + (type == null ? "" : " and type_id = " + type) + (statusFilter != null ? " and status=" + statusFilter : "")
                 + "'," + start + "," + limit + ",'" + sort + "'," + statusSort + ")";
         ResultSet rs = getData(sql);
         try {
@@ -107,7 +107,7 @@ public class SettingDAO extends ConnectJDBC {
 
     public boolean checkAddSetting(int type_id, int value, boolean status) {
         boolean check = false;
-        String sql = "SELECT * from `studentmanagement`.`setting` where type_id =" + type_id + " and setting_value =" + value + " and status=" + status;
+        String sql = "SELECT * from `setting` where type_id =" + type_id + " and setting_value =" + value + " and status=" + status;
         ResultSet rs = getData(sql);
         try {
             if (rs.next()) {
@@ -122,7 +122,7 @@ public class SettingDAO extends ConnectJDBC {
 
     public int addSetting(Setting s) {
         int check = -1;
-        String sql = "INSERT INTO `studentmanagement`.`setting` (`type_id`, `setting_title`, `setting_value`, `display_order`, `status`,`description`) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO `setting` (`type_id`, `setting_title`, `setting_value`, `display_order`, `status`,`description`) VALUES (?, ?, ?, ?, ?, ?)";
         try {
             Connection conn = getConnection();
             PreparedStatement pre = conn.prepareStatement(sql);
@@ -133,7 +133,7 @@ public class SettingDAO extends ConnectJDBC {
             pre.setBoolean(5, s.isStatus());
             pre.setString(6, s.getDescription());
             if (pre.executeUpdate() > 0) {
-                ResultSet rs = getData("SELECT setting_id from `studentmanagement`.`setting` order by setting_id desc limit 1");
+                ResultSet rs = getData("SELECT setting_id from `setting` order by setting_id desc limit 1");
                 if (rs.next()) {
                     check = rs.getInt(1);
                 }
@@ -147,7 +147,7 @@ public class SettingDAO extends ConnectJDBC {
 
     public boolean updateStatus(int setId, boolean status) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`setting` \n"
+        String sql = "UPDATE `setting` \n"
                 + "SET status=?\n"
                 + "where setting_id=?";
         try {
@@ -165,7 +165,7 @@ public class SettingDAO extends ConnectJDBC {
 
     public boolean updateSetting(Setting s) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`setting` \n"
+        String sql = "UPDATE `setting` \n"
                 + "SET type_id=?, setting_title=?,setting_value=?, display_order=?, status=?, `description`=?\n"
                 + "where setting_id=?";
         try {
@@ -188,7 +188,7 @@ public class SettingDAO extends ConnectJDBC {
 
     public List<Setting> getSettings(int typeId) {
         List<Setting> set = new ArrayList<>();
-        String sql = "SELECT * from `studentmanagement`.`setting` where type_id=" + typeId + " order by display_order ASC";
+        String sql = "SELECT * from `setting` where type_id=" + typeId + " order by display_order ASC";
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {

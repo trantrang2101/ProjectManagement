@@ -38,7 +38,7 @@ public class ClassUserDAO extends Utils.ConnectJDBC {
             return true;
         }
         boolean check = false;
-        String sql = "select * from `studentmanagement`.`class_user` " + (("where team_id=" + team).concat(user.getRole_id() == 3 ? " and class_id in (select class_id from `studentmanagement`.`class` where trainer_id=" + user.getUser_id() + ")" : (user.getRole_id() == 4 ? " and user_id=" + user.getUser_id() : " and class_id in (select class_id from `studentmanagement`.`class`,`studentmanagement`.`subject` where class.subject_id=subject.subject_id and author_id=" + user.getUser_id() + ")")));
+        String sql = "select * from `class_user` " + (("where team_id=" + team).concat(user.getRole_id() == 3 ? " and class_id in (select class_id from `class` where trainer_id=" + user.getUser_id() + ")" : (user.getRole_id() == 4 ? " and user_id=" + user.getUser_id() : " and class_id in (select class_id from `class`,`subject` where class.subject_id=subject.subject_id and author_id=" + user.getUser_id() + ")")));
         ResultSet rs = getData(sql);
         try {
             if (rs.next()) {
@@ -53,7 +53,7 @@ public class ClassUserDAO extends Utils.ConnectJDBC {
 
     public ClassUser checkClassUser(String class_code, String email) {
         ClassUser check = null;
-        String sql = "select * from `studentmanagement`.`class_user`,`studentmanagement`.`class`,`studentmanagement`.`user` where email= '" + email + "' and user.status=1 and class.status=1 and class_user.status=1 and user.user_id=class_user.user_id and class.class_id=class_user.class_id and class_code='" + class_code + "'";
+        String sql = "select * from `class_user`,`class`,`user` where email= '" + email + "' and user.status=1 and class.status=1 and class_user.status=1 and user.user_id=class_user.user_id and class.class_id=class_user.class_id and class_code='" + class_code + "'";
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -79,7 +79,7 @@ public class ClassUserDAO extends Utils.ConnectJDBC {
 
     public boolean updateClassUser(ClassUser c) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`class_user` SET `team_id`=?,`dropout_date`=?,`user_notes`=?,`team_leader`=?, `status` = ? WHERE (`class_id` = ? and `user_id`=?);";
+        String sql = "UPDATE `class_user` SET `team_id`=?,`dropout_date`=?,`user_notes`=?,`team_leader`=?, `status` = ? WHERE (`class_id` = ? and `user_id`=?);";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             pre.setInt(1, c.getTeam_id());
@@ -99,7 +99,7 @@ public class ClassUserDAO extends Utils.ConnectJDBC {
 
     public boolean updateChangeStatus(int id, int classId, boolean status) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`class_user` SET `status` = ? WHERE (`class_id` = ? and `user_id` = ?);";
+        String sql = "UPDATE `class_user` SET `status` = ? WHERE (`class_id` = ? and `user_id` = ?);";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             pre.setBoolean(1, status);
@@ -115,7 +115,7 @@ public class ClassUserDAO extends Utils.ConnectJDBC {
 
     public ClassUser getLeader(int team_id) {
         ClassUser check = null;
-        String sql = "select * from `studentmanagement`.`class_user` where team_id=" + team_id + " and team_leader=1 and status=1";
+        String sql = "select * from `class_user` where team_id=" + team_id + " and team_leader=1 and status=1";
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -140,7 +140,7 @@ public class ClassUserDAO extends Utils.ConnectJDBC {
 
     public boolean addClassUser(ClassUser c) {
         boolean check = false;
-        String sql = "INSERT INTO `studentmanagement`.`class_user` (`class_id`,`team_id`,`user_id`,`team_leader`,`user_notes`,`dropout_date`,`status`)"
+        String sql = "INSERT INTO `class_user` (`class_id`,`team_id`,`user_id`,`team_leader`,`user_notes`,`dropout_date`,`status`)"
                 + "VALUES (?,?,?,?,?,?,?);";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
@@ -161,7 +161,7 @@ public class ClassUserDAO extends Utils.ConnectJDBC {
 
     public int getClassNumber(int class_id) {
         int check = -1;
-        String sql = "select count(user_id) from `studentmanagement`.`class_user` where status=1 and class_id=" + class_id;
+        String sql = "select count(user_id) from `class_user` where status=1 and class_id=" + class_id;
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -177,7 +177,7 @@ public class ClassUserDAO extends Utils.ConnectJDBC {
 
     public boolean checkClass(String code, int subject_id, int year, int term, boolean block5) {
         boolean check = false;
-        String sql = "select * from studentmanagement.class where class_id= '" + code + "' and subject_id=" + subject_id + " and class_year = " + year + " and class_term=" + term + " block5_class=" + (block5 ? "1" : "0");
+        String sql = "select * from class where class_id= '" + code + "' and subject_id=" + subject_id + " and class_year = " + year + " and class_term=" + term + " block5_class=" + (block5 ? "1" : "0");
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -193,7 +193,7 @@ public class ClassUserDAO extends Utils.ConnectJDBC {
 
     public ClassUser getClassUser(int class_id, int user_id) {
         ClassUser classUser = null;
-        String sql = "select * from `studentmanagement`.`class_user` where class_id=" + class_id + " and user_id=" + user_id;
+        String sql = "select * from `class_user` where class_id=" + class_id + " and user_id=" + user_id;
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -214,8 +214,8 @@ public class ClassUserDAO extends Utils.ConnectJDBC {
 
     public List<ClassUser> getList(Integer type, Integer statusChoose, String search, int start, int limit, User user, int classID, String sort, boolean statusSort) {
         List<ClassUser> list = new ArrayList<>();
-        String sql = "CALL `studentmanagement`.search('\\'%" + search + "%\\'','studentmanagement','class_user','" + (search.isEmpty() ? "" : " or user_id in (select user_id from `studentmanagement`.`user` where (`email` like \"%" + search + "%\" or `full_name` like \"%" + search + "%\" or `roll_number` like \"%" + search + "%\"))") + " and class_id=" + classID + (type != null ? " and team_id=" + type : "") + (statusChoose != null ? " and status = " + statusChoose : "")
-                + (user.getRole_id() == 1 ? "" : user.getRole_id() == 3 ? " and class_id in (select class_id from `studentmanagement`.`class` where trainer_id=" + user.getUser_id() + ")" : (user.getRole_id() == 4 ? "" : " and class_id in (select class_id from `studentmanagement`.`class`,`studentmanagement`.`subject` where class.subject_id=subject.subject_id and author_id=" + user.getUser_id() + ")")) 
+        String sql = "CALL search('\\'%" + search + "%\\'','class_user','" + (search.isEmpty() ? "" : " or user_id in (select user_id from `user` where (`email` like \"%" + search + "%\" or `full_name` like \"%" + search + "%\" or `roll_number` like \"%" + search + "%\"))") + " and class_id=" + classID + (type != null ? " and team_id=" + type : "") + (statusChoose != null ? " and status = " + statusChoose : "")
+                + (user.getRole_id() == 1 ? "" : user.getRole_id() == 3 ? " and class_id in (select class_id from `class` where trainer_id=" + user.getUser_id() + ")" : (user.getRole_id() == 4 ? "" : " and class_id in (select class_id from `class`,`subject` where class.subject_id=subject.subject_id and author_id=" + user.getUser_id() + ")")) 
                 + "'," + start + "," + limit + ",'" + sort + "'," + statusSort + ")";
         ResultSet rs1 = getData(sql);
         try {

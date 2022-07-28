@@ -40,7 +40,7 @@ public class CriteriaDAO extends Utils.ConnectJDBC {
     }
 
     public Criteria getCriteria(int id) {
-        String sql = "SELECT * FROM studentmanagement.evaluation_criteria where Criteria_id=" + id;
+        String sql = "SELECT * FROM evaluation_criteria where Criteria_id=" + id;
         Criteria crit = null;
         ResultSet rs = getData(sql);
         try {
@@ -65,14 +65,14 @@ public class CriteriaDAO extends Utils.ConnectJDBC {
     }
 
     public boolean updateStatus(int id, boolean status) {
-          boolean check = false;
+        boolean check = false;
         double result = 0;
-        String sql = "CALL `studentmanagement`.`updateCriteriaStatus`( ? , ? );";
+        String sql = "CALL `updateCriteriaStatus`( ? , ? );";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             pre.setBoolean(2, status);
             pre.setInt(1, id);
-           ResultSet rs = pre.executeQuery();
+            ResultSet rs = pre.executeQuery();
             while (rs.next()) {
                 result = rs.getDouble(1);
             }
@@ -89,7 +89,7 @@ public class CriteriaDAO extends Utils.ConnectJDBC {
 
     public boolean updateTeamEval(int id, boolean teamEval) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`evaluation_criteria` SET `team_evaluation` = ? WHERE (`criteria_id` = ?);";
+        String sql = "UPDATE `evaluation_criteria` SET `team_evaluation` = ? WHERE (`criteria_id` = ?);";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             pre.setBoolean(1, teamEval);
@@ -102,14 +102,15 @@ public class CriteriaDAO extends Utils.ConnectJDBC {
         return check;
     }
 
-    public List<Criteria> getList(int type, String search, User login, int start, int limit, String sort, boolean statusSort, Integer statusFilter, Integer teamEvalFilter) {
+    public List<Criteria> getList(int type, String search, User login, int start, int limit, String sort, boolean statusSort, Integer statusFilter, Integer iteration_id) {
         List<Criteria> list = new ArrayList<>();
-        String sql = "CALL `studentmanagement`.search('\\'%" + search + "%\\'','studentmanagement','evaluation_criteria','"
-                + "" + (teamEvalFilter == null ? "" : " and team_evaluation= " + teamEvalFilter) + (statusFilter == null ? "" : " and status= " + statusFilter) + (login.getRole_id() == 2 ? (type == 0 ? " and iteration_id in (select iteration_id from studentmanagement.iteration join subject on subject.subject_id = iteration.subject_id"
+        String sql = "CALL search('\\'%" + search + "%\\'','evaluation_criteria','"
+                + "" + (iteration_id == null ? "" : " and iteration_id= " + iteration_id)
+                + (statusFilter == null ? "" : " and status= " + statusFilter) + (login.getRole_id() == 2 ? (type == 0 ? " and iteration_id in (select iteration_id from iteration join subject on subject.subject_id = iteration.subject_id"
                 + " where subject.author_id = " + login.getUser_id() + ")"
-                : " and iteration_id in (select iteration_id from studentmanagement.iteration join subject on subject.subject_id = iteration.subject_id"
+                : " and iteration_id in (select iteration_id from iteration join subject on subject.subject_id = iteration.subject_id"
                 + " where iteration.subject_id = " + type + " and subject.author_id = " + login.getUser_id() + ")") : (type == 0 ? ""
-                : " and iteration_id in (select iteration_id from studentmanagement.iteration join subject on subject.subject_id = iteration.subject_id where iteration.subject_id =  " + type + ")"))
+                : " and iteration_id in (select iteration_id from iteration join subject on subject.subject_id = iteration.subject_id where iteration.subject_id =  " + type + ")"))
                 + "'," + start + "," + limit + ",'" + sort + "'," + statusSort + ")";
 
         ResultSet rs = getData(sql);
@@ -120,7 +121,7 @@ public class CriteriaDAO extends Utils.ConnectJDBC {
                 ResultSet rs1 = getData(sql1);
                 while (rs1.next()) {
                     int criteria_id = rs1.getInt("criteria_id");
-                    int iteration_id = rs1.getInt("iteration_id");
+                    int iteration_id1 = rs1.getInt("iteration_id");
                     String criteria_title = rs1.getString("criteria_title");
                     String criteria_description = rs1.getString("criteria_description");
                     double evaluation_weight = rs1.getDouble("evaluation_weight");
@@ -128,7 +129,7 @@ public class CriteriaDAO extends Utils.ConnectJDBC {
                     int criteria_order = rs1.getInt("criteria_order");
                     int max_loc = rs1.getInt("max_loc");
                     boolean status = rs1.getBoolean("status");
-                    list.add(new Criteria(criteria_id, iteration_id, criteria_title, criteria_description, evaluation_weight, team_evaluation, criteria_order, max_loc, status));
+                    list.add(new Criteria(criteria_id, iteration_id1, criteria_title, criteria_description, evaluation_weight, team_evaluation, criteria_order, max_loc, status));
                 }
             }
         } catch (SQLException e) {
@@ -141,7 +142,7 @@ public class CriteriaDAO extends Utils.ConnectJDBC {
     public boolean addCriteria(Criteria crit) {
         boolean check = false;
         double result = 0;
-            String sql = "CALL `studentmanagement`.`addCriteria`(? , ?, ?, ? , ? , ? , ?, ?)";
+        String sql = "CALL `addCriteria`(? , ?, ?, ? , ? , ? , ?, ?)";
         try {
             Connection conn = getConnection();
             PreparedStatement pre = conn.prepareStatement(sql);
@@ -170,7 +171,7 @@ public class CriteriaDAO extends Utils.ConnectJDBC {
     public boolean updateCriteria(Criteria crit) {
 
         //criteria_id,criteria_iterationid, crit_title, crit_description,crit_weight, crit_order, crit_loc , status
-        String sql = "CALL `studentmanagement`.`updateCriteria`(?, ? ,? , ?, ? ,? ,?, ?, ?)";
+        String sql = "CALL `updateCriteria`(?, ? ,? , ?, ? ,? ,?, ?, ?)";
         boolean check = false;
         double result = 0;
         try {
@@ -204,7 +205,7 @@ public class CriteriaDAO extends Utils.ConnectJDBC {
     }
 
     public double getCriteriaTotalWeight(int id) {
-        String sql = "SELECT sum(evaluation_weight) FROM studentmanagement.evaluation_criteria where iteration_id = " + id +" and status = 1";
+        String sql = "SELECT sum(evaluation_weight) FROM evaluation_criteria where iteration_id = " + id + " and status = 1";
         double total = 0;
         ResultSet rs = getData(sql);
         try {

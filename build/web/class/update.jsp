@@ -59,12 +59,12 @@
                                 <div class="card card-waves p-4 mb-4 mt-5">
                                     <div class="row">
                                         <div class="mb-3 col-xl-3 col-md-6">
-                                            <label for="title" class="form-label">Class Code</label>
+                                            <label for="title" class="form-label">Class Code<span style="color: red">*</span></label>
                                             <input type="text" ${loginUser.getRole_id()<3?"required=''":"disabled=''"} name="classCode" class="form-control border-0 border-bottom bg-transparent" value="${class!=null?class.getClass_code():''}">
                                             <input type="text" hidden="" name="id" class="form-control" value="${class!=null?class.getClass_id():''}">
                                         </div>
                                         <div class="mb-3 col-lg-9 col-sm-6">
-                                            <label for="teacher" class="form-label">Teacher (*)</label>
+                                            <label for="teacher" class="form-label">Teacher<span style="color: red">*</span></label>
                                             <select id="teacher" ${loginUser.getRole_id()<3?"required=''":"disabled=''"} class="form-control  border-0 border-bottom bg-transparent" name="teacher">
                                                 <c:forEach items="${sessionScope.LIST_TEACHER}" var="teacher">
                                                     <c:choose>
@@ -80,7 +80,7 @@
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="subject" class="form-label">Subject (*)</label>
+                                        <label for="subject" class="form-label">Subject<span style="color: red">*</span></label>
                                         <select id="subject" ${loginUser.getRole_id()<3?"required=''":"disabled=''"} class="form-control  border-0 border-bottom bg-transparent" name="subject">
                                             <c:forEach items="${sessionScope.LIST_SUBJECT}" var="subject">
                                                 <c:choose>
@@ -96,7 +96,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="mb-3 col-xl-4 col-md-6">
-                                            <label for="year" class="form-label">Class Year (*)</label>
+                                            <label for="year" class="form-label">Class Year<span style="color: red">*</span></label>
                                             <input type="text" pattern="\d*" ${loginUser.getRole_id()<3?"required=''":"disabled=''"} value="${class!=null?class.getClass_year():''}" name="year" id="year" class="form-control border-0 border-bottom bg-transparent">
                                         </div>
                                         <div class="mb-3 col-xl-8 col-md-12 ms-auto">
@@ -104,11 +104,11 @@
                                             <input ${loginUser.getRole_id()<3?"":"disabled=''"} type="text" id="gitlabUrl" name="gitlabUrl" pattern="^(http(s):\/\/)?gitlab\.com[\w\-\._~:\/?#[\]@!\$&'\(\)\*\+,;=.]+$" title="Input must be GitLab URL" class="form-control border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}" value="${class.gitlab_url}" maxlength="255">
                                         </div>
                                         <div class="mb-3 col-xl-4 col-md-6">
-                                            <label for="accessToken" class="form-label">Access Token</label>
+                                            <label for="accessToken" class="form-label">Access Token<span style="color: red">*</span></label>
                                             <input ${loginUser.getRole_id()<3?"":"disabled=''"} id="accessToken" ${class.gitlab_url!=null&&class.gitlab_url!=""?"":"disabled=''"}  type="text" required="" id="accessToken" name="accessToken" class="form-control border-0 border-bottom ${loginUser.getRole_id()>3||class.gitlab_url==null||class.gitlab_url==""?'bg-primary-soft':'bg-transparent'}" value="${class.apiToken}" maxlength="50">
                                         </div>
                                         <div class="mb-3 col-xl-4 col-md-12">
-                                            <label for="sem" class="form-label">Semester (*)</label>
+                                            <label for="sem" class="form-label">Semester<span style="color: red">*</span></label>
                                             <select id="sem" ${loginUser.getRole_id()<3?"required=''":"disabled=''"} class="form-control col border-0 border-bottom bg-transparent" name="sem">
                                                 <c:forEach items="${requestScope.LIST_TERM}" var="sem">
                                                     <c:choose>

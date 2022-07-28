@@ -50,11 +50,7 @@
                             <form action="team" method="POST">
                                 <div class="card card-waves p-4 mb-4 mt-5">
                                     <div class="row align-items-end">
-                                        <div class="mb-3 col-xl-4 col-md-6">
-                                            <label for="id" class="form-label">Team ID</label>
-                                            <input type="text" class="form-control border-0 border-bottom bg-transparent" value="${team.team_id}" disabled="">
-                                            <input type="text" name="id" class="form-control" value="${team.team_id}" hidden="">
-                                        </div>
+                                        <input type="text" name="id" class="form-control" value="${team.team_id}" hidden="">
                                         <div class="mb-3 col-xl-4 col-md-6">
                                             <label for="classId" class="form-label border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}">Class</label>
                                             <%
@@ -83,15 +79,15 @@
                                             %>
                                         </div>
                                         <div class="mb-3 col-xl-4 col-md-6">
-                                            <label for="teamName" class="form-label">Team Name</label>
+                                            <label for="teamName" class="form-label">Team Name<span style="color: red">*</span></label>
                                             <input ${loginUser.getRole_id()<3?"":"disabled=''"} type="text" required="" name="teamName" class="form-control border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}" value="${team.team_name}" maxlength="50">
                                         </div>
                                         <div class="mb-3 col-xl-4 col-md-6">
-                                            <label for="topicCode" class="form-label">Topic Code</label>
+                                            <label for="topicCode" class="form-label">Topic Code<span style="color: red">*</span></label>
                                             <input ${loginUser.getRole_id()<3?"":"disabled=''"} type="text" required="" name="topicCode" class="form-control border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}" value="${team.topic_code}" maxlength="10">
                                         </div>
-                                        <div class="mb-3 col-xl-8 col-md-6">
-                                            <label for="topicName" class="form-label">Topic Name</label>
+                                        <div class="mb-3 col-xl-12 col-md-6">
+                                            <label for="topicName" class="form-label">Topic Name<span style="color: red">*</span></label>
                                             <input ${loginUser.getRole_id()<3?"":"disabled=''"} type="text" required="" name="topicName" class="form-control border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}" value="${team.topic_name}" maxlength="50">
                                         </div>
                                     </div>
@@ -101,7 +97,7 @@
                                             <input ${loginUser.getRole_id()<3?"":"disabled=''"} type="text" id="gitlabUrl" name="gitlabUrl" pattern="^(http(s):\/\/)?gitlab\.com[\w\-\._~:\/?#[\]@!\$&'\(\)\*\+,;=.]+$" title="Input must be GitLab URL" class="form-control border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}" value="${team.gitlab_url}" maxlength="255">
                                         </div>
                                         <div class="mb-3 col-xl-4 col-md-6">
-                                            <label for="accessToken" class="form-label">Access Token</label>
+                                            <label for="accessToken" class="form-label">Access Token<span style="color: red">*</span></label>
                                             <input ${loginUser.getRole_id()<3?"":"disabled=''"} id="accessToken" ${team.gitlab_url!=null&&team.gitlab_url!=""?"":"disabled=''"}  type="text" required="" id="accessToken" name="accessToken" class="form-control border-0 border-bottom ${loginUser.getRole_id()>3||team.gitlab_url==null||team.gitlab_url==""?'bg-primary-soft':'bg-transparent'}" value="${team.apiToken}" maxlength="50">
                                         </div>
                                         <div class="mb-3 col-xl-4 col-md-6 d-flex flex-column justify-content-between h-100">

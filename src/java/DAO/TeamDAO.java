@@ -37,7 +37,7 @@ public class TeamDAO extends ConnectJDBC {
 
     public int getTeam(int class_id, int user_id) {
         int team = -1;
-        String sql = "SELECT * from `studentmanagement`.`team`,`studentmanagement`.`class_user` where class_user.team_id=team.team_id and user_id=" + user_id + " and team.class_id=" + class_id;
+        String sql = "SELECT * from `team`,`class_user` where class_user.team_id=team.team_id and user_id=" + user_id + " and team.class_id=" + class_id;
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -52,7 +52,7 @@ public class TeamDAO extends ConnectJDBC {
 
     public Team getTeam(int id) {
         Team team = null;
-        String sql = "SELECT * from `studentmanagement`.`team` where team_id=" + id;
+        String sql = "SELECT * from `team` where team_id=" + id;
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -74,8 +74,8 @@ public class TeamDAO extends ConnectJDBC {
 
     public List<Team> getList(Integer class_id, User login, String search, int start, int limit, String sort, boolean statusSort, Integer statusFilter) {
         List<Team> list = new ArrayList<>();
-        String sql = "CALL `studentmanagement`.search('\\'%" + search + "%\\'','studentmanagement','team','" 
-                + (login.getRole_id() == 1 ? "" : (login.getRole_id() == 2 ? " and class_id in (select class_id from `studentmanagement`.`class`,`studentmanagement`.`subject` where subject.subject_id=class.subject_id and author_id=" + login.getUser_id() + ")" : (login.getRole_id() == 3 ? " and class_id in (select class_id from `studentmanagement`.`class` where trainer_id=" + login.getUser_id() + ")" : " and status=1".concat(" and team_id in (select team_id from `studentmanagement`.`class_user` where user_id=" + login.getUser_id() + ")"))))
+        String sql = "CALL search('\\'%" + search + "%\\'','team','" 
+                + (login.getRole_id() == 1 ? "" : (login.getRole_id() == 2 ? " and class_id in (select class_id from `class`,`subject` where subject.subject_id=class.subject_id and author_id=" + login.getUser_id() + ")" : (login.getRole_id() == 3 ? " and class_id in (select class_id from `class` where trainer_id=" + login.getUser_id() + ")" : " and status=1".concat(" and team_id in (select team_id from `class_user` where user_id=" + login.getUser_id() + ")"))))
                 + (statusFilter == null ? "" : " and status= " + statusFilter)
                 + (class_id == null ? "" : " and class_id = " + class_id)
                 + "'," + start + "," + limit + ",'" + sort + "'," + statusSort + ")";
@@ -105,7 +105,7 @@ public class TeamDAO extends ConnectJDBC {
 
     public int checkAddTeam(String team_name, int class_id, boolean status) {
         int check = -1;
-        String sql = "SELECT team_id from `studentmanagement`.`team` where team_name = '" + team_name + "' and class_id = " + class_id + " and status = " + status;
+        String sql = "SELECT team_id from `team` where team_name = '" + team_name + "' and class_id = " + class_id + " and status = " + status;
         ResultSet rs = getData(sql);
         try {
             if (rs.next()) {
@@ -120,7 +120,7 @@ public class TeamDAO extends ConnectJDBC {
 
     public int addTeam(Team t) {
         int check = -1;
-        String sql = "INSERT INTO `studentmanagement`.`team` (`class_id`, `team_name`, `topic_code`, `topic_name`, `gitlab_url`, `apiToken`, `status`) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO `team` (`class_id`, `team_name`, `topic_code`, `topic_name`, `gitlab_url`, `apiToken`, `status`) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try {
             Connection conn = getConnection();
             PreparedStatement pre = conn.prepareStatement(sql);
@@ -132,7 +132,7 @@ public class TeamDAO extends ConnectJDBC {
             pre.setString(6, t.getApiToken());
             pre.setBoolean(7, t.isStatus());
             if (pre.executeUpdate() > 0) {
-                ResultSet rs = getData("SELECT team_id from `studentmanagement`.`team` order by team_id desc limit 1");
+                ResultSet rs = getData("SELECT team_id from `team` order by team_id desc limit 1");
                 if (rs.next()) {
                     check = rs.getInt(1);
                 }
@@ -146,7 +146,7 @@ public class TeamDAO extends ConnectJDBC {
 
     public boolean updateStatus(int teamId, boolean status) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`team` \n"
+        String sql = "UPDATE `team` \n"
                 + "SET status=?\n"
                 + "where team_id=?";
         try {
@@ -164,7 +164,7 @@ public class TeamDAO extends ConnectJDBC {
 
     public boolean updateTeam(Team t) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`team` \n"
+        String sql = "UPDATE `team` \n"
                 + "SET class_id=?, team_name=?, topic_code=?, topic_name=?, gitlab_url=?, apiToken=?, status=?\n"
                 + "where team_id=?";
         try {

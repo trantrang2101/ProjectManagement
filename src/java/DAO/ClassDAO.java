@@ -53,8 +53,8 @@ public class ClassDAO extends Utils.ConnectJDBC {
 //    private static void getClass(User user) {
 //        listTeacher = new ArrayList<>();
 //        listSubject = new ArrayList<>();
-//        String sql = "select trainer_id,subject_id from `studentmanagement`.`class`"
-//                + (user.getRole_id() == 1 ? "" : user.getRole_id() == 3 ? "where trainer_id=" + user.getUser_id() : " status=1".concat(user.getRole_id() == 4 ? "where class_id in (select class_id from `studentmanagement`.`class_user` where user_id=" + user.getUser_id() + ")" : "where subject_id in (select subject_id from `studentmanagement`.`subject` where author_id=" + user.getUser_id() + ")"));
+//        String sql = "select trainer_id,subject_id from `class`"
+//                + (user.getRole_id() == 1 ? "" : user.getRole_id() == 3 ? "where trainer_id=" + user.getUser_id() : " status=1".concat(user.getRole_id() == 4 ? "where class_id in (select class_id from `class_user` where user_id=" + user.getUser_id() + ")" : "where subject_id in (select subject_id from `subject` where author_id=" + user.getUser_id() + ")"));
 //        try {
 //            Connection conn = getConnection();
 //            Statement stm = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -71,7 +71,7 @@ public class ClassDAO extends Utils.ConnectJDBC {
 //    }
     public boolean updateClassroom(Classroom c) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`class` SET `class_code` = ?, `trainer_id` = ?, `subject_id` = ?, `Class_year` = ?, `class_term` = ?, "
+        String sql = "UPDATE `class` SET `class_code` = ?, `trainer_id` = ?, `subject_id` = ?, `Class_year` = ?, `class_term` = ?, "
                 + "`block5_class` = ?, `status` = ?,`description`=?,`gitlab_url`=?,`apiToken`=? WHERE (`class_id` = ?);";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
@@ -96,7 +96,7 @@ public class ClassDAO extends Utils.ConnectJDBC {
 
     public boolean updateChangeStatus(int id, boolean status) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`class` SET `status` = ? WHERE (`class_id` = ?);";
+        String sql = "UPDATE `class` SET `status` = ? WHERE (`class_id` = ?);";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             pre.setBoolean(1, status);
@@ -111,7 +111,7 @@ public class ClassDAO extends Utils.ConnectJDBC {
 
     public boolean addClass(Classroom c) {
         boolean check = false;
-        String sql = "INSERT INTO `studentmanagement`.`class` (`class_code`, `trainer_id`, `subject_id`, `class_year`, `class_term`, `block5_class`, `status`, `description`,`apiToken`,`gitlab_url`)"
+        String sql = "INSERT INTO `class` (`class_code`, `trainer_id`, `subject_id`, `class_year`, `class_term`, `block5_class`, `status`, `description`,`apiToken`,`gitlab_url`)"
                 + "VALUES (?,?, ?, ?,?, ?,?,?,?,?);";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
@@ -135,7 +135,7 @@ public class ClassDAO extends Utils.ConnectJDBC {
 
     public boolean checkClass(String code, int subject_id, int year, int term, boolean block5) {
         boolean check = false;
-        String sql = "select * from studentmanagement.class where class_id= '" + code + "' and subject_id=" + subject_id + " and class_year = " + year + " and class_term=" + term + " block5_class=" + (block5 ? "1" : "0");
+        String sql = "select * from class where class_id= '" + code + "' and subject_id=" + subject_id + " and class_year = " + year + " and class_term=" + term + " block5_class=" + (block5 ? "1" : "0");
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -151,8 +151,8 @@ public class ClassDAO extends Utils.ConnectJDBC {
 
     public Classroom getClass(User user, int id) {
         Classroom list = null;
-        String sql = "select * from studentmanagement.class where class_id=" + id
-                + (user == null || user.getRole_id() == 1 ? "" : user.getRole_id() == 3 ? " and trainer_id=" + user.getUser_id() : " and status=1".concat(user.getRole_id() == 4 ? " and class_id in (select class_id from `studentmanagement`.`class_user` where user_id=" + user.getUser_id() + ")" : " and subject_id in (select subject_id from `studentmanagement`.`subject` where author_id=" + user.getUser_id() + ")"));
+        String sql = "select * from class where class_id=" + id
+                + (user == null || user.getRole_id() == 1 ? "" : user.getRole_id() == 3 ? " and trainer_id=" + user.getUser_id() : " and status=1".concat(user.getRole_id() == 4 ? " and class_id in (select class_id from `class_user` where user_id=" + user.getUser_id() + ")" : " and subject_id in (select subject_id from `subject` where author_id=" + user.getUser_id() + ")"));
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -178,8 +178,8 @@ public class ClassDAO extends Utils.ConnectJDBC {
 
     public List<Classroom> getList(String search, int start, int limit, User user, Integer type, Integer trainer, Integer statusFilter, String sort, boolean statusSort) {
         List<Classroom> list = new ArrayList<>();
-        String sql = "CALL `studentmanagement`.search('\\'%" + search + "%\\'','studentmanagement','class','" + (type != null ? " and subject_id=" + type : "").concat(trainer != null ? " and trainer_id=" + trainer : "").concat(statusFilter != null ? " and status=" + statusFilter : "")
-                + (user.getRole_id() == 1 ? "" : user.getRole_id() == 3 ? " and trainer_id=" + user.getUser_id() : " and status=1".concat(user.getRole_id() == 4 ? " and class_id in (select class_id from `studentmanagement`.`class_user` where user_id=" + user.getUser_id() + ")" : " and subject_id in (select subject_id from `studentmanagement`.`subject` where author_id=" + user.getUser_id() + ")"))
+        String sql = "CALL search('\\'%" + search + "%\\'','class','" + (type != null ? " and subject_id=" + type : "").concat(trainer != null ? " and trainer_id=" + trainer : "").concat(statusFilter != null ? " and status=" + statusFilter : "")
+                + (user.getRole_id() == 1 ? "" : user.getRole_id() == 3 ? " and trainer_id=" + user.getUser_id() : " and status=1".concat(user.getRole_id() == 4 ? " and class_id in (select class_id from `class_user` where user_id=" + user.getUser_id() + ")" : " and subject_id in (select subject_id from `subject` where author_id=" + user.getUser_id() + ")"))
                 + "'," + start + "," + limit + ",'" + sort + "'," + statusSort + ")";
         ResultSet rs1 = getData(sql);
         try {

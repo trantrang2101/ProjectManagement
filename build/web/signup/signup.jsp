@@ -51,14 +51,16 @@
                     </div>
                 </div>
                 <div class="wrap-form-field">
-                    <label for="fullname" class="form-label">Full Name</label>
+                    <label for="fullname" class="form-label">Full Name<span style="color: red">*</span></label>
                     <div class="form-group group-width-icon">
                         <i class="fa-solid fa-user"></i>
-                        <input class="form-control" placeholder="Full name" autofocus="" type="text" data-val="true" data-val-required="Name is required" required="" title="Wrong format" id="fullname" name="fullname" pattern="^([A-Z][a-z]+[ ])+([A-Z][a-z]+)$" maxlength="40">
+                        <input class="form-control" placeholder="Full name" autofocus="" type="text" data-val="true" data-val-required="Name is required" required="" title="Wrong format" id="fullname" name="fullname" 
+                               pattern="^[A-ZÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸĐ][a-zàáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]*(?:[ ][A-ZÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸĐ][a-zàáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]*)*$" 
+                               maxlength="40">
                     </div>
                 </div>
                 <div class="wrap-form-field">
-                    <label for="email" class="form-label">Your email</label>
+                    <label for="email" class="form-label">Your email<span style="color: red">*</span></label>
                     <div class="form-group group-width-icon">
                         <i class="fa-solid fa-envelope"></i>
                         <input class="form-control" placeholder="Email" autofocus="" type="email" data-val="true" data-val-required="Email is required" required="" pattern="[a-z0-9._%+-]+@fpt.edu.vn$" id="email" name="email" maxlength="40">
@@ -67,7 +69,7 @@
                 </div>
                 <div class="row">
                     <div class="wrap-form-field col">
-                        <label for="password" class="form-label">Password</label>
+                        <label for="password" class="form-label">Password<span style="color: red">*</span></label>
                         <div class="form-group group-width-icon">
                             <i class="fa-solid fa-lock"></i>
                             <input type="password" id="password" class="form-control" placeholder="Password" autocomplete="off" data-val="true" data-val-required="Password is required" required="" id="password" maxlength="40" name="password">
@@ -78,7 +80,7 @@
                         <span class="text-danger field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span>
                     </div>
                     <div class="wrap-form-field col">
-                        <label for="passwordCf" class="form-label">Confirm password</label>
+                        <label for="passwordCf" class="form-label">Confirm password<span style="color: red">*</span></label>
                         <div class="form-group group-width-icon">
                             <i class="fa-solid fa-lock"></i>
                             <input type="password" id="passwordCf" class="form-control" placeholder="Password" autocomplete="off" data-val="true" data-val-required="Password is required" required="" maxlength="40" name="passwordCf">

@@ -27,7 +27,7 @@
                                         <div class="text-center small text-muted mb-4">Enter your email address below and we will send you a link to reset your password.</div>
                                         <form action="signup">
                                             <div class="wrap-form-field col">
-                                                <label for="passwordCf" class="form-label">Confirm password</label>
+                                                <label for="passwordCf" class="form-label">Confirm password<span style="color: red">*</span></label>
                                                 <div class="form-group group-width-icon">
                                                     <i class="fa-solid fa-envelope"></i>
                                                     <input class="form-control form-control-solid" disabled="" placeholder="Email" autofocus="" type="email" value="${requestScope.EMAIL!=null?requestScope.EMAIL:""}" data-val="true" pattern="[a-z0-9._%+-]+@(fpt|fu).edu.vn$" data-val-pattern="You must input fpt education email" data-val-required="Email is required" title="You must input fpt education email" maxlength="40" required="" id="email" name="email">
@@ -37,7 +37,7 @@
                                                 <span class="text-danger field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span>
                                             </div>
                                             <div class="wrap-form-field col">
-                                                <label for="password" class="form-label">Password</label>
+                                                <label for="password" class="form-label">Password<span style="color: red">*</span></label>
                                                 <div class="form-group group-width-icon">
                                                     <i class="fa-solid fa-lock"></i>
                                                     <input type="password" id="password" class="form-control" placeholder="Password" autocomplete="off" data-val="true" data-val-required="Password is required" required="" id="password" maxlength="40" name="password">
@@ -48,7 +48,7 @@
                                                 <span class="text-danger field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span>
                                             </div>
                                             <div class="wrap-form-field col">
-                                                <label for="passwordCf" class="form-label">Confirm password</label>
+                                                <label for="passwordCf" class="form-label">Confirm password<span style="color: red">*</span></label>
                                                 <div class="form-group group-width-icon">
                                                     <i class="fa-solid fa-lock"></i>
                                                     <input type="password" id="passwordCf" class="form-control" placeholder="Password" autocomplete="off" data-val="true" data-val-required="Password is required" required="" maxlength="40" name="passwordCf">

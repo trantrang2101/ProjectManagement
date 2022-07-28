@@ -41,7 +41,7 @@ public class SubjectDAO extends Utils.ConnectJDBC {
     }
 
     public Subject getSubject(int id) {
-        String sql = "SELECT * FROM studentmanagement.subject where subject_id=" + id;
+        String sql = "SELECT * FROM subject where subject_id=" + id;
         Subject sub = null;
         ResultSet rs = getData(sql);
         try {
@@ -64,7 +64,7 @@ public class SubjectDAO extends Utils.ConnectJDBC {
 
     public boolean checkAddSubject(String code) {
         boolean check = false;
-        String sql = "SELECT * FROM studentmanagement.subject where subject_code = '" + code + "'";
+        String sql = "SELECT * FROM subject where subject_code = '" + code + "'";
         ResultSet rs = getData(sql);
         try {
             if (rs.next()) {
@@ -79,9 +79,9 @@ public class SubjectDAO extends Utils.ConnectJDBC {
 
     public List<Subject> getList(String search, User login, int start, int limit, String sort, boolean statusSort, Integer statusFilter, int authorFilter) {
         List<Subject> list = new ArrayList<>();
-        String sql = "CALL `studentmanagement`.search('\\'%" + search + "%\\'','studentmanagement','subject',"
+        String sql = "CALL search('\\'%" + search + "%\\'','subject',"
                 + "'" + (statusFilter == null ? "" : " and status= " + statusFilter) + (authorFilter > 0 ? " and author_id=" + authorFilter : "") + " and author_id in (select user_id from user where `email` like \\'%" + search + "%\\' or `full_name` like \\'%" + search + "%\\' or `mobile` like \\'%" + search + "%\\' or `roll_number` like \\'%" + search + "%\\')"
-                + (login == null || login.getRole_id() == 1 ? "" : " and status=1 ".concat(login.getRole_id() == 2 ? " and author_id = " + login.getUser_id() : login.getRole_id() == 3 ? " and subject_id in (select distinct subject_id " + "from `studentmanagement`.`class` where trainer_id=" + login.getUser_id() + ")" : " and subject_id in (select distinct subject_id from `studentmanagement`.`class`,`studentmanagement`.`class_user`" + " where class.class_id = class_user.class_id and user_id=" + login.getUser_id() + ")"))
+                + (login == null || login.getRole_id() == 1 ? "" : " and status=1 ".concat(login.getRole_id() == 2 ? " and author_id = " + login.getUser_id() : login.getRole_id() == 3 ? " and subject_id in (select distinct subject_id " + "from `class` where trainer_id=" + login.getUser_id() + ")" : " and subject_id in (select distinct subject_id from `class`,`class_user`" + " where class.class_id = class_user.class_id and user_id=" + login.getUser_id() + ")"))
                 + "'," + start + "," + limit + ",'" + sort + "'," + statusSort + ")";
         ResultSet rs1 = getData(sql);
         try {
@@ -108,7 +108,7 @@ public class SubjectDAO extends Utils.ConnectJDBC {
 
     public int addSubject(Subject subject) {
         int check = -1;
-        String sql = "INSERT INTO `studentmanagement`.`subject`"
+        String sql = "INSERT INTO `subject`"
                 + "("
                 + "`subject_code`,"
                 + "`subject_name`,"
@@ -127,7 +127,7 @@ public class SubjectDAO extends Utils.ConnectJDBC {
             pre.setBoolean(5, subject.isStatus());
 
             if (pre.executeUpdate() > 0) {
-                ResultSet rs = getData("SELECT subject_id from `studentmanagement`.`subject` order by subject_id desc limit 1");
+                ResultSet rs = getData("SELECT subject_id from `subject` order by subject_id desc limit 1");
                 if (rs.next()) {
                     check = rs.getInt(1);
                 }
@@ -143,7 +143,7 @@ public class SubjectDAO extends Utils.ConnectJDBC {
 
     public boolean updateStatus(int id, boolean status) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`subject`\n"
+        String sql = "UPDATE `subject`\n"
                 + "SET "
                 + "`status` = ? "
                 + "WHERE `subject_id` = ? ;";
@@ -161,7 +161,7 @@ public class SubjectDAO extends Utils.ConnectJDBC {
 
     public boolean updateSubject(Subject s) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`subject` "
+        String sql = "UPDATE `subject` "
                 + "SET `subject_code` = ?, "
                 + "`subject_name` = ?, "
                 + "`author_id` = ?,  "

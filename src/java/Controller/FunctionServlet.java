@@ -52,6 +52,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.gitlab.api.GitlabAPI;
+import org.gitlab.api.models.GitlabIssue;
+import org.gitlab.api.models.GitlabProject;
 
 /**
  *
@@ -96,7 +99,7 @@ public class FunctionServlet extends HttpServlet {
             Integer status = request.getParameter("status") == null || request.getParameter("status").isEmpty() ? null : Integer.parseInt(request.getParameter("status"));
             Integer featureFilter = request.getParameter("feature") == null || request.getParameter("feature").isEmpty() ? null : Integer.parseInt(request.getParameter("feature"));
             Integer complexityFilter = request.getParameter("complexity") == null || request.getParameter("complexity").isEmpty() ? null : Integer.parseInt(request.getParameter("complexity"));
-           SubjectSetting complexityChoose = complexityFilter == null? null : DAO.SubjectSettingDAO.getInstance().getSubjectSetting(complexityFilter);
+            SubjectSetting complexityChoose = complexityFilter == null ? null : DAO.SubjectSettingDAO.getInstance().getSubjectSetting(complexityFilter);
             Integer priorityFilter = request.getParameter("priority") == null || request.getParameter("priority").isEmpty() ? null : Integer.parseInt(request.getParameter("priority"));
             Integer ownerFilter = request.getParameter("owner_id") == null || request.getParameter("owner_id").isEmpty() ? null : Integer.parseInt(request.getParameter("owner_id"));
             if (classFilter == null) {
@@ -138,7 +141,7 @@ public class FunctionServlet extends HttpServlet {
                     login.getUser_id());
             if (cu != null) {
                 isLeader = cu.isTeam_leader();
-                isDropped=!cu.isStatus();
+                isDropped = !cu.isStatus();
             }
             request.setAttribute("isLeader", isLeader);
             request.setAttribute("isDropped", isDropped);
@@ -162,30 +165,30 @@ public class FunctionServlet extends HttpServlet {
                     }
                     request.setAttribute("SORT_FUNCTION", sort);
                     request.setAttribute("SORT_STATUS", statusSort);
-                    
+
                     request.setAttribute("SEARCH_WORD", search);
                     request.setAttribute("STATUS_CHOOSE", status == null ? null : DAO.ClassSettingDAO.getInstance().getClassSetting(classFilter, 10, status));
                     request.setAttribute("STATUS_VALUE", status);
                     request.setAttribute("COMPLEXITY_CHOOSE", complexityChoose);
                     request.setAttribute("THIS_PAGE", thisPage);
-                    List<Function> funcList = DAO.FunctionDAO.getInstance().getList(type, featureFilter, login, search, (thisPage - 1) * 10, 10, "function_id", statusSort, status, 
-                            complexityChoose==null?null:complexityChoose.getSetting_value(), 
-                            priorityFilter,ownerFilter);
+                    List<Function> funcList = DAO.FunctionDAO.getInstance().getList(type, featureFilter, login, search, (thisPage - 1) * 10, 10, "function_id", statusSort, status,
+                            complexityChoose == null ? null : complexityChoose.getSetting_value(),
+                            priorityFilter, ownerFilter);
                     request.setAttribute("LIST_FUNCTION", funcList);
                     Set<Integer> priorityList = new HashSet<>();
-                    for (Function func : DAO.FunctionDAO.getInstance().getList(type, featureFilter, login, search, 0, Integer.MAX_VALUE, "function_id", statusSort, status, 
-                            complexityChoose==null?null:complexityChoose.getSetting_value(), null, ownerFilter)) {
+                    for (Function func : DAO.FunctionDAO.getInstance().getList(type, featureFilter, login, search, 0, Integer.MAX_VALUE, "function_id", statusSort, status,
+                            complexityChoose == null ? null : complexityChoose.getSetting_value(), null, ownerFilter)) {
                         priorityList.add(func.getPriority());
                     }
-                    request.setAttribute("FUNCTION_SIZE", (int) Math.ceil(DAO.FunctionDAO.getInstance().countRows("function", search, (login.getRole_id() == 4 ? "and team_id = (select team_id from class_user where user_id="+login.getUser_id()+" )" :"".concat(login.getRole_id()==2?"and team_id in (select team_id from `studentmanagement`.`team` where class_id in (select class_id from class where subject_id in (select subject_id from subject where author_id="+login.getUser_id()+")))":"").concat(login.getRole_id()==3?"and team_id in (select team_id from `studentmanagement`.`team` where class_id in (select class_id from class where trainer_id in (select trainer_id from class where trainer_id="+login.getUser_id()+")))":"")) 
-                 + (type == 0 ? "" : " and team_id = " + type)
-                + (featureFilter == null ? "" : " and feature_id = " + featureFilter)
-                + (complexityFilter == null ? "" : " and complexity_id = " + complexityChoose.getSetting_value())
-                + (priorityFilter== null ? "" : " and priority = " + priorityFilter)
-                + (status == null ? "" : " and status = " + status)) * 1.0 / 10));
+                    request.setAttribute("FUNCTION_SIZE", (int) Math.ceil(DAO.FunctionDAO.getInstance().countRows("function", search, (login.getRole_id() == 4 ? "and team_id = (select team_id from class_user where user_id=" + login.getUser_id() + " )" : "".concat(login.getRole_id() == 2 ? "and team_id in (select team_id from `team` where class_id in (select class_id from class where subject_id in (select subject_id from subject where author_id=" + login.getUser_id() + ")))" : "").concat(login.getRole_id() == 3 ? "and team_id in (select team_id from `team` where class_id in (select class_id from class where trainer_id in (select trainer_id from class where trainer_id=" + login.getUser_id() + ")))" : ""))
+                            + (type == 0 ? "" : " and team_id = " + type)
+                            + (featureFilter == null ? "" : " and feature_id = " + featureFilter)
+                            + (complexityFilter == null ? "" : " and complexity_id = " + complexityChoose.getSetting_value())
+                            + (priorityFilter == null ? "" : " and priority = " + priorityFilter)
+                            + (status == null ? "" : " and status = " + status)) * 1.0 / 10));
                     request.setAttribute("PRIORITY_LIST", priorityList);
                     request.setAttribute("PRIORITY_CHOOSE", priorityFilter);
-                     request.setAttribute("OWNER_CHOOSE", ownerFilter==null||classroom==null?null:DAO.ClassUserDAO.getInstance().getClassUser(classroom.getClass_id(), ownerFilter));
+                    request.setAttribute("OWNER_CHOOSE", ownerFilter == null || classroom == null ? null : DAO.ClassUserDAO.getInstance().getClassUser(classroom.getClass_id(), ownerFilter));
                     dispathForward(request, response, "function/list.jsp");
                     break;
                 case "changeStatus":
@@ -282,10 +285,36 @@ public class FunctionServlet extends HttpServlet {
                         }
                     }
                     break;
+                case "sync":
+                    Team team_choose = DAO.TeamDAO.getInstance().getTeam(type);
+                    GitlabAPI api = GitlabAPI.connect("https://gitlab.com/", team_choose.getApiToken());
+                    try {
+                        String spaceName = "";
+                        String[] splitURL = team_choose.getGitlab_url().split("/");
+                        for (int i = 1; i < splitURL.length - 2; i++) {
+                            spaceName += splitURL[i] + "/";
+                        }
+                        spaceName += splitURL[splitURL.length - 2];
+                        GitlabProject project = api.getProject(spaceName, splitURL[splitURL.length - 1]);
+                        List<Function> list = DAO.FunctionDAO.getInstance().getList(type, null, login, "", 0, Integer.MAX_VALUE, "function_id", true, null, null, null, null);
+                        for (Function function : list) {
+                            GitlabIssue issueChoose = null;
+                            try {
+                                issueChoose = api.createIssue(project.getId(), -1, null, function.getFunctionStatus().getSetting_title(), function.getDescription(), function.getFunction_name());
+                            } catch (java.lang.NoSuchMethodError e) {
+                                e.printStackTrace(new PrintWriter(errors));
+                                logger.error(errors.toString());
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace(new PrintWriter(errors));
+                        logger.error(errors.toString());
+                    }
+                    url = ("function?service=list&type=" + type);
+                    break;
                 case "detail":
                     Function function_choose = DAO.FunctionDAO.getInstance().getFunction(id);
                     int statusfc = function_choose.isStatus();
-
                     List<ClassSetting> statusList = DAO.ClassSettingDAO.getInstance().getList(10, classFilter, "", login, 0, Integer.MAX_VALUE, "setting_id", true, 1);
                     for (int i = 0; i < statusList.size(); i++) {
                         if (statusList.get(i).getSetting_value() == statusfc) {
@@ -325,7 +354,7 @@ public class FunctionServlet extends HttpServlet {
                     dispathForward(request, response, "function/detail.jsp");
                     break;
                 case "exportExcel":
-                    Team team_choose = DAO.TeamDAO.getInstance().getTeam(type);
+                    team_choose = DAO.TeamDAO.getInstance().getTeam(type);
                     List<Function> functions = DAO.FunctionDAO.getInstance().getList(type, null, login, "", 0, Integer.MAX_VALUE, "function_id", true, null, null, null, null);
                     if (functions.size() > 0) {
                         File desktop = new File(System.getProperty("user.home"), "/Desktop");

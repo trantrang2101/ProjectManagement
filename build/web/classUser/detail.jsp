@@ -91,7 +91,7 @@
                                             </div>
                                             <div class="row align-items-end">
                                                 <div class="mb-3 col-xl-12 col-md-12">
-                                                    <label for="id" class="form-label">User email</label>
+                                                    <label for="id" class="form-label">User email<span style="color: red">*</span></label>
                                                     <input type="email" name="email" class="form-control border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}" ${classUserChoose!=null?'disabled=""':'data-val="true" pattern="[a-z0-9._%+-]+@(fpt|fu).edu.vn$" data-val-pattern="You must input fpt education email" data-val-required="Email is required" title="You must input fpt education email" maxlength="40"'} value="${classUserChoose.getUser().getEmail()}">
                                                     <input type="text" name="user" class="form-control" value="${classUserChoose!=null?classUserChoose.getUser_id():''}" hidden="">
                                                 </div>
@@ -130,7 +130,7 @@
                                                 <label for="userNote">User Note</label>
                                             </div>
                                             <div ${loginUser.getRole_id()<4?"":"hidden=''"} class="ms-auto">
-                                                <input type="text" name="submit" class="form-control" value="add" hidden="">
+                                                <input type="text" name="submitForm" class="form-control" value="add" hidden="">
                                                 <input type="reset" class="btn btn-light" data-bs-dismiss="modal" value="Reset"></input>
                                                 <button type="submit" name="service" value="${classUserChoose!=null?'update':'add'}" class="btn btn-primary">Save changes</button>
                                             </div>

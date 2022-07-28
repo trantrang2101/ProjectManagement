@@ -14,8 +14,8 @@
             <link href="css/styles.css" rel="stylesheet" />
             <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.min.js"></script>
             <title class="text-capitalize">Tracking List</title>
-    </head>
-    <body>
+        </head>
+        <body>
         <c:set var="loginUser" value="${sessionScope.LOGIN_USER}"></c:set>
             <div class="nav-fixed">
             <jsp:include page="../included/header.jsp"/>
@@ -23,142 +23,75 @@
                 <jsp:include page="../included/slider.jsp"/>
                 <div id="layoutSidenav_content">
                     <main>
-                        <header class="page-header page-header-compact page-header-light bg-white mb-4">
+                        <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
                             <div class="container-fluid px-4">
                                 <div class="page-header-content">
-                                    <div class="row align-items-center justify-content-between pt-3">
-                                        <div class="col-auto mb-3">
-                                            <h1 class="page-header-title">
-                                                <div class="page-header-icon"><i data-feather="user"></i></div>
-                                                Tracking List
-                                            </h1>
+                                    <div class="row mb-4">
+                                        <div class="d-flex flex-column align-center justify-content-start col-xl-6 col-md-12 mb-3 mb-9 gap-3">
+                                            <h1 class="mb-0 text-bold text-capitalize mb-3">Subject List</h1>
+                                            <div class="text-muted d-flex"><h6>Function: </h6><span class="ml-4">${requestScope.TRACKING_CHOOSE.getFunction().getFunction_name()}</span></div>
+                                            <div class="text-muted d-flex"><h6>Evaluated in: </h6><span class="ml-4">${requestScope.TRACKING_CHOOSE.getMilestone().getMilestone_name()}</span></div>
+                                            <textarea disabled="" class="text-muted">${requestScope.TRACKING_CHOOSE.getTracking_note()}</textarea>
                                         </div>
-                                        <c:if test="${loginUser.getRole_id()==4&&requestScope.TRACKING_CHOOSE.getStatusSetting().getSetting_title().toLowerCase()!='closed'}">
-                                            <div class="col-12 col-xl-auto mb-3 d-flex justify-content-between ms-auto">
-                                                <a href="updateTracking?tracking=${requestScope.TRACKING_CHOOSE.getTracking_id()}&service=add" class="btn btn-primary" style="margin-right: 1rem;">
-                                                    <i class="fa-solid fa-plus"></i>
-                                                    Add New Tracking
-                                                </a>
-                                            </div>
-                                        </c:if>  
+                                        <div class="col-xl-6 col-md-12 mb-3 mb-9">
+                                            <c:if test="${(requestScope.TRACKING_CHOOSE!=null&&requestScope.TRACKING_CHOOSE.getAssignee_id()==loginUser.getUser_id())&&loginUser.getRole_id()==4}">
+                                                <form action="updateTracking" method="POST">
+                                                    <div class="row">
+                                                        <div class="mb-3 col-xl-6 col-md-6">
+                                                            <label for="tracking" class="form-label">Function<span style="color: red">*</span></label>
+                                                            <input type="hidden" name="class" value="${requestScope.TRACKING_UPDATE_CHOOSE.getTracking().getClassroom().getClass_id()}"/>
+                                                            <input type="hidden" name="team" value="${requestScope.TRACKING_UPDATE_CHOOSE.getTracking().getTeam().getTeam_id()}"/>
+                                                            <input type="hidden" name="feature" value="${requestScope.TRACKING_UPDATE_CHOOSE.getTracking().getFeature().getFeature_id()}"/>
+                                                            <input type="text" name="tracking" id="tracking" class="form-control" value="${requestScope.TRACKING_CHOOSE.getTracking_id()}" hidden="">
+                                                            <input type="text" required=""  class="form-control border-0 border-bottom ${loginUser.getRole_id()<4?'bg-primary-soft':'bg-transparent'}" value="${requestScope.TRACKING_CHOOSE.getFunction().getFunction_name()}_${requestScope.TRACKING_CHOOSE.getAssignee().getFull_name()}" disabled="">
+                                                            <c:if test="${requestScope.TRACKING_UPDATE_CHOOSE != null}" >
+                                                                <input type="hidden" name="id" value="${requestScope.TRACKING_UPDATE_CHOOSE.getUpdate_id()}"/>
+                                                            </c:if>
+                                                        </div>
+                                                        <div class="mb-3 col-xl-6 col-md-6">
+                                                            <label for="milestone" class="form-label">Milestone<span style="color: red">*</span></label>
+                                                            <c:choose>
+                                                                <c:when test="${requestScope.TRACKING_UPDATE_CHOOSE != null}" >
+                                                                    <input type="text" required=""  class="form-control border-0 border-bottom ${loginUser.getRole_id()<4?'bg-primary-soft':'bg-transparent'}" value="${requestScope.TRACKING_CHOOSE.getMilestone().getMilestone_name()}" disabled="">
+                                                                    <input type="text" name="milestone" id="milestone" class="form-control" value="${requestScope.TRACKING_UPDATE_CHOOSE.getMilestone_id()}" hidden="">
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <select ${loginUser.getRole_id()==4?"":"disabled=''"} id="milestone" required="" ${requestScope.LIST_MILESTONE==null?'disabled=""':''} name="milestone" class="form-control col border-0 border-bottom ${loginUser.getRole_id()<4?'bg-primary-soft':'bg-transparent'}" >
+                                                                        <c:forEach items="${requestScope.LIST_MILESTONE}" var="milestone">
+                                                                            <c:if test="${milestone.after()}">
+                                                                                <c:choose>
+                                                                                    <c:when test="${(requestScope.MILESTONE_CHOOSE!=null&&requestScope.MILESTONE_CHOOSE.getMilestone_id()==milestone.getMilestone_id())||(requestScope.TRACKING_CHOOSE!=null&&requestScope.TRACKING_CHOOSE.getMilestone_id()==milestone.getMilestone_id())}">
+                                                                                        <option class="text-capitalize" value="${milestone.getMilestone_id()}" selected="">${milestone.getMilestone_name()}</option>
+                                                                                    </c:when>
+                                                                                    <c:otherwise>
+                                                                                        <option class="text-capitalize" value="${milestone.getMilestone_id()}">${milestone.getMilestone_name()}</option>
+                                                                                    </c:otherwise>
+                                                                                </c:choose>
+                                                                            </c:if>
+                                                                        </c:forEach>          
+                                                                    </select>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-3 form-floating">
+                                                        <textarea ${loginUser.getRole_id()==4?"":"disabled=''"} class="form-control ${loginUser.getRole_id()<4?'bg-primary-soft':'bg-transparent'}" placeholder="User Note" id="trackingNote" name="note">${requestScope.TRACKING_UPDATE_CHOOSE!=null?requestScope.TRACKING_UPDATE_CHOOSE.getUpdate_note():''}</textarea>
+                                                        <label for="trackingNote">Tracking Note</label>
+                                                    </div>
+                                                    <div class="ms-auto">
+                                                        <input type="text" name="submitForm" class="form-control" value="add" hidden="">
+                                                        <input type="reset" class="btn btn-light" data-bs-dismiss="modal" value="Reset"></input>
+                                                        <button type="submit" name="service" value="${trackingChoose!=null?'update':'add'}" class="btn btn-primary">Save changes</button>
+                                                    </div>
+                                                </form>
+                                            </c:if>
+                                        </div>
                                     </div>
-                                    <nav class="mt-4 rounded bg-light" aria-label="breadcrumb">
-                                        <ol class="breadcrumb px-3 py-2 rounded mb-0">
-                                            <li class="breadcrumb-item"><a href="dashBoard">Dashboard</a></li>
-                                            <li class="breadcrumb-item"><a href="tracking${class!=null?'?class='.concat(class.getClass_id()):''}">Tracking</a></li>
-                                            <li class="breadcrumb-item"><a href="tracking?id=${requestScope.TRACKING_CHOOSE.getTracking_id()}">${requestScope.TRACKING_CHOOSE.getFunction().getFunction_name()}_${requestScope.TRACKING_CHOOSE.getAssignee().getFull_name()}</a></li>
-                                            <li class="breadcrumb-item active">Update Tracking List</li>
-                                        </ol>
-                                    </nav>
                                 </div>
                             </div>
                         </header>
                         <div class="container-fluid px-4">
                             <div class="card p-4 mb-4 mt-5">
-                                <div class="card-header d-flex flex-column justify-content-between bg-white">
-                                    <div class="">
-                                        <div class="row" style="padding:  1 rem !important;box-sizing: border-box;">
-                                            <div class="dropdown mb-3 col-xl-2 col-lg-6">
-                                                <label for="class" class="form-label">Class</label>
-                                                <button class="form-select text-capitalize border-0 border-bottom bg-transparent d-flex align-items-start" id="class" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    ${class.getSubject().getSubject_code()}_${class.class_code}
-                                                </button>
-                                                <div class="dropdown-menu w-100" aria-labelledby="class">
-                                                    <c:forEach items="${sessionScope.LIST_CLASS}" var="classroom">
-                                                        <a class="dropdown-item text-capitalize w-100 text-dark" href="updateTracking?class=${classroom.class_id}">${classroom.getSubject().getSubject_code()}_${classroom.class_code}</a>
-                                                    </c:forEach>
-                                                </div>
-                                            </div>
-                                            <div class="dropdown mb-3 col-xl-2 col-lg-6">
-                                                <label for="team" class="form-label">Team</label>
-                                                <button class="form-select text-capitalize border-0 border-bottom bg-transparent d-flex align-items-start" id="team" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    ${requestScope.TEAM_CHOOSE.getTeam_name()}
-                                                </button>
-                                                <div class="dropdown-menu" aria-labelledby="team">
-                                                    <c:forEach items="${requestScope.LIST_TEAM}" var="team">
-                                                        <a class="dropdown-item text-capitalize" href="updateTracking?team=${team.getTeam_id()}">${team.getTeam_name()}</a>
-                                                    </c:forEach>
-                                                </div>
-                                            </div>
-                                            <div class="dropdown mb-3 col-xl-2 col-lg-6">
-                                                <label for="feature" class="form-label">Feature</label>
-                                                <button class="form-select text-capitalize border-0 border-bottom bg-transparent d-flex align-items-start" id="feature" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    <c:choose>
-                                                        <c:when test="${requestScope.FEATURE_CHOOSE!=null}">
-                                                            ${requestScope.FEATURE_CHOOSE.getFeature_name()}
-                                                        </c:when>                                
-                                                        <c:otherwise>
-                                                            All
-                                                        </c:otherwise>
-                                                    </c:choose>
-                                                </button>
-                                                <div class="dropdown-menu w-100" aria-labelledby="class">
-                                                    <a class="dropdown-item text-capitalize w-100 text-dark" href="updateTracking?team=${requestScope.TEAM_CHOOSE.team_id}">All</a>
-                                                    <c:forEach items="${requestScope.LIST_FEATURE}" var="feature">
-                                                        <a class="dropdown-item text-capitalize w-100 text-dark" href="updateTracking?team=${requestScope.TEAM_CHOOSE.team_id}&feature=${feature.getFeature_id()}${requestScope.MILESTONE_CHOOSE!=null?"&milestone=".concat(requestScope.MILESTONE_CHOOSE.getMilestone_id()):""}">${feature.getFeature_name()}</a>
-                                                    </c:forEach>
-                                                </div>
-                                            </div>
-                                            <div class="dropdown mb-3 col-xl-2 col-lg-6">
-                                                <label for="milestone" class="form-label">Milestone</label>
-                                                <button class="form-select text-capitalize border-0 border-bottom bg-transparent d-flex align-items-start" id="class" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    <c:choose>
-                                                        <c:when test="${requestScope.MILESTONE_CHOOSE!=null}">
-                                                            ${requestScope.MILESTONE_CHOOSE.getMilestone_name()}
-                                                        </c:when>                                
-                                                        <c:otherwise>
-                                                            All
-                                                        </c:otherwise>
-                                                    </c:choose>
-                                                </button>
-                                                <div class="dropdown-menu w-100" aria-labelledby="class">
-                                                    <a class="dropdown-item text-capitalize w-100 text-dark" href="updateTracking?team=${requestScope.TEAM_CHOOSE.team_id}${requestScope.FEATURE_CHOOSE!=null?"&feature=".concat(requestScope.FEATURE_CHOOSE.getFeature_id()):""}">All</a>
-                                                    <c:forEach items="${requestScope.LIST_MILESTONE}" var="milestone">
-                                                        <a class="dropdown-item text-capitalize w-100 text-dark" href="updateTracking?team=${requestScope.TEAM_CHOOSE.team_id}&milestone=${milestone.getMilestone_id()}${requestScope.FEATURE_CHOOSE!=null?"&feature=".concat(requestScope.FEATURE_CHOOSE.getFeature_id()):""}">${milestone.getMilestone_name()}</a>
-                                                    </c:forEach>
-                                                </div>
-                                            </div>
-                                            <div class="dropdown mb-3 col-xl-2 col-lg-6">
-                                                <label for="status" class="form-label">Assignee</label>
-                                                <button class="form-select text-capitalize border-0 border-bottom d-flex align-items-start" id="status" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    <c:choose>
-                                                        <c:when test="${requestScope.ASSIGNEE_CHOOSE!=null}">
-                                                            ${requestScope.ASSIGNEE_CHOOSE.getUser().getFull_name()}
-                                                        </c:when>                                
-                                                        <c:otherwise>
-                                                            All Assignee
-                                                        </c:otherwise>
-                                                    </c:choose>
-                                                </button>
-                                                <div class="dropdown-menu " aria-labelledby="status">
-                                                    <a class="nav-link" href="updateTracking?team=${requestScope.TEAM_CHOOSE.team_id}${requestScope.MILESTONE_CHOOSE!=null?"&milestone=".concat(requestScope.MILESTONE_CHOOSE.getMilestone_id()):""}${requestScope.FEATURE_CHOOSE!=null?"&feature=".concat(requestScope.FEATURE_CHOOSE.getFeature_id()):""}">All</a>
-                                                    <c:forEach items="${requestScope.LIST_USER}" var="user">
-                                                        <a class="nav-link text-capitalize" href="updateTracking?team=${requestScope.TEAM_CHOOSE.team_id}&assignee=${user.getUser_id()}${requestScope.MILESTONE_CHOOSE!=null?"&milestone=".concat(requestScope.MILESTONE_CHOOSE.getMilestone_id()):""}${requestScope.FEATURE_CHOOSE!=null?"&feature=".concat(requestScope.FEATURE_CHOOSE.getFeature_id()):""}">${user.getUser().getFull_name()}</a>
-                                                    </c:forEach>
-                                                </div>
-                                            </div>
-                                            <div class="dropdown mb-3 col-xl-2 col-lg-6">
-                                                <label for="tracking" class="form-label">Tracking</label>
-                                                <button class="form-select text-capitalize border-0 border-bottom d-flex align-items-start" id="tracking" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    <c:choose>
-                                                        <c:when test="${requestScope.TRACKING_CHOOSE!=null}">
-                                                            ${requestScope.TRACKING_CHOOSE.getFunction().getFunction_name()}
-                                                        </c:when>                                
-                                                        <c:otherwise>
-                                                            All
-                                                        </c:otherwise>
-                                                    </c:choose>
-                                                </button>
-                                                <div class="dropdown-menu " aria-labelledby="status">
-                                                    <a class="nav-link text-dark" href="updateTracking?team=${requestScope.TEAM_CHOOSE.team_id}">All</a>
-                                                    <c:forEach items="${requestScope.LIST_TRACKING}" var="tracking">
-                                                        <a class="nav-link text-capitalize text-normal text-dark" href="updateTracking?team=${requestScope.TEAM_CHOOSE.team_id}&tracking=${tracking.getTracking_id()}">${tracking.getFunction().getFunction_name()}</a>
-                                                    </c:forEach>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="card-body table-responsive">
                                     <table class="table table-striped table-hover table-bordered padding-0">
                                         <thead class="table-primary">

@@ -38,7 +38,7 @@ public class UserDAO extends ConnectJDBC {
     }
 
     public User checkRollNumber(String rollNum) {
-        String sql = "select * from `studentmanagement`.`user` where `roll_number` = "+rollNum;
+        String sql = "select * from `user` where `roll_number` = "+rollNum;
         User ojb = null;
         ResultSet rs = getData(sql);
         try {
@@ -68,7 +68,7 @@ public class UserDAO extends ConnectJDBC {
 
     public boolean updateImage(int id, String avaLink) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`user` SET `avatar_link` = ? WHERE (`user_id` = ?);";
+        String sql = "UPDATE `user` SET `avatar_link` = ? WHERE (`user_id` = ?);";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             pre.setString(1, avaLink);
@@ -83,7 +83,7 @@ public class UserDAO extends ConnectJDBC {
 
     public boolean updateUser(User u) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`user` SET `roll_number` = ?, `full_name` = ?, `gender` = ?, `date_of_birth` = ?, `mobile` = ?, `facebook_link` = ?, `role_id` = ? WHERE (`user_id` = ?);";
+        String sql = "UPDATE `user` SET `roll_number` = ?, `full_name` = ?, `gender` = ?, `date_of_birth` = ?, `mobile` = ?, `facebook_link` = ?, `role_id` = ? WHERE (`user_id` = ?);";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             pre.setString(1, u.getRoll_number());
@@ -104,7 +104,7 @@ public class UserDAO extends ConnectJDBC {
 
     public boolean updateStatus(int id, boolean status) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`user` SET `status` = ? WHERE (`user_id` = ?);";
+        String sql = "UPDATE `user` SET `status` = ? WHERE (`user_id` = ?);";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             pre.setBoolean(1, status);
@@ -119,7 +119,7 @@ public class UserDAO extends ConnectJDBC {
 
     public boolean setUUID(String inputEmail, String uuid) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`user` SET `uuid` = ? WHERE (`email` = ?);";
+        String sql = "UPDATE `user` SET `uuid` = ? WHERE (`email` = ?);";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             pre.setString(1, uuid);
@@ -133,7 +133,7 @@ public class UserDAO extends ConnectJDBC {
     }
 
     public String getEmail(String uuid) {
-        String sql = "select email from `studentmanagement`.`user` where uuid='"+uuid+"'";
+        String sql = "select email from `user` where uuid='"+uuid+"'";
         String ojb = "";
         ResultSet rs = getData(sql);
         try {
@@ -150,7 +150,7 @@ public class UserDAO extends ConnectJDBC {
     }
     
     public User getUser(String inputEmail) {
-        String sql = "CALL studentmanagement.getUserByEmail('" + inputEmail + "')";
+        String sql = "CALL getUserByEmail('" + inputEmail + "')";
         User ojb = null;
         ResultSet rs = getData(sql);
         try {
@@ -180,7 +180,7 @@ public class UserDAO extends ConnectJDBC {
     @Override
     public int countRows(String table, String search, String addCondition) {
         int te = 0;
-        String sql = "SELECT count(*) from `studentmanagement`.`user` where (`avatar_link` like '%" + search + "%' or `email` like '%" + search + "%' or`facebook_link` like '%" + search + "%' or`full_name` like '%" + search + "%' or`mobile` like '%" + search + "%' or `roll_number` like '%" + search + "%') " + addCondition;
+        String sql = "SELECT count(*) from `user` where (`avatar_link` like '%" + search + "%' or `email` like '%" + search + "%' or`facebook_link` like '%" + search + "%' or`full_name` like '%" + search + "%' or`mobile` like '%" + search + "%' or `roll_number` like '%" + search + "%') " + addCondition;
         ResultSet rs1 = getData(sql);
         try {
             while (rs1.next()) {
@@ -195,7 +195,7 @@ public class UserDAO extends ConnectJDBC {
     }
 
     public List<User> getList(int id, String search, String sort, boolean statusSort, int start, int limit, Integer statusFilter) {
-        String sql = "SELECT * from `studentmanagement`.`user` where (`avatar_link` like '%" + search + "%' or `email` like '%" + search + "%' or`facebook_link` like '%" + search + "%' or`full_name` like '%" + search + "%' or`mobile` like '%" + search + "%' or `roll_number` like '%" + search + "%')" + (statusFilter == null ? "" : " and status=" + statusFilter) + (id > 0 ? " and role_id=" + id : "")
+        String sql = "SELECT * from `user` where (`avatar_link` like '%" + search + "%' or `email` like '%" + search + "%' or`facebook_link` like '%" + search + "%' or`full_name` like '%" + search + "%' or`mobile` like '%" + search + "%' or `roll_number` like '%" + search + "%')" + (statusFilter == null ? "" : " and status=" + statusFilter) + (id > 0 ? " and role_id=" + id : "")
                 + (sort == null ? "" : " order by " + sort + (statusSort ? "" : " desc")) + " limit " + start + ", " + limit;
         List<User> list = new ArrayList<>();
         ResultSet rs = getData(sql);
@@ -224,7 +224,7 @@ public class UserDAO extends ConnectJDBC {
     }
 
     public User getUser(int id, boolean admin) {
-        String sql = "SELECT * from `studentmanagement`.`user` where user_id=" + id + (!admin ? " and status=1" : "");
+        String sql = "SELECT * from `user` where user_id=" + id + (!admin ? " and status=1" : "");
         User ojb = null;
         ResultSet rs = getData(sql);
         try {
@@ -253,7 +253,7 @@ public class UserDAO extends ConnectJDBC {
 
     public boolean changePW(String inputMail, String password) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`user` SET `password` = ? WHERE (`email` = ?);";
+        String sql = "UPDATE `user` SET `password` = ? WHERE (`email` = ?);";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             pre.setString(1, BCrypt.hashpw(password, BCrypt.gensalt(5)));
@@ -267,7 +267,7 @@ public class UserDAO extends ConnectJDBC {
     }
 
     public User login(String inputEmail, String inputPassword) {
-        String sql = "CALL studentmanagement.getUserByEmail('" + inputEmail + "')";
+        String sql = "CALL getUserByEmail('" + inputEmail + "')";
         User ojb = null;
         ResultSet rs = getData(sql);
         try {
@@ -299,7 +299,7 @@ public class UserDAO extends ConnectJDBC {
 
     public boolean deleteUser(String mail) {
         boolean check = false;
-        String sql = "Delete from `studentmanagement`.`user` where email = '" + mail + "'";
+        String sql = "Delete from `user` where email = '" + mail + "'";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             check = pre.executeUpdate() > 0;
@@ -312,7 +312,7 @@ public class UserDAO extends ConnectJDBC {
 
     public boolean addUser(User u) {
         boolean check = false;
-        String sql = "INSERT INTO `studentmanagement`.`user` "
+        String sql = "INSERT INTO `user` "
                 + "(`roll_number`, `full_name`, `gender`, `date_of_birth`, `email`, `password`, `mobile`, `role_id`, `status`,`Avatar_link`) "
                 + "VALUES (?,?, ?, ?,?, ?,?, ?, ?,?);";
         try {

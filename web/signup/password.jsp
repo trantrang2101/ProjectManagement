@@ -27,7 +27,7 @@
                                         <div class="text-center small text-muted mb-4">Enter your email address below and we will send you a link to reset your password.</div>
                                         <form action="signup">
                                             <div class="mb-3">
-                                                <label class="text-gray-600 small" for="email">Email address</label>
+                                                <label class="text-gray-600 small" for="email">Email address<span style="color: red">*</span></label>
                                                 <input class="form-control form-control-solid" placeholder="Email" autofocus="" type="email" value="${requestScope.EMAIL!=null?requestScope.EMAIL:""}" data-val="true" pattern="[a-z0-9._%+-]+@(fpt|fu).edu.vn$" data-val-pattern="You must input fpt education email" data-val-required="Email is required" title="You must input fpt education email" maxlength="40" required="" id="email" name="email">
                                             </div>
                                             <button class="btn btn-primary" name="service" value="forgotPW">Reset Password</button>

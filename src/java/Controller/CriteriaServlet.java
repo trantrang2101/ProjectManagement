@@ -6,7 +6,7 @@
 package Controller;
 
 import DAO.CriteriaDAO;
-import Model.Entity.Criteria;
+import Model.Entity.*;
 import Model.Entity.User;
 import Utils.AppUtils;
 import java.io.IOException;
@@ -51,16 +51,18 @@ public class CriteriaServlet extends HttpServlet {
             List<String> error = new ArrayList<>();
             String service = request.getParameter("service");
             Integer statusFilter = request.getParameter("statusFilter") != null && !request.getParameter("statusFilter").isEmpty() ? Integer.parseInt(request.getParameter("statusFilter")) : null;
-            Integer teamEvalFilter = request.getParameter("teamEvalFilter") != null && !request.getParameter("teamEvalFilter").isEmpty() ? Integer.parseInt(request.getParameter("teamEvalFilter")) : null;
             String id = request.getParameter("id");
             String url = "";
             if (service == null) {
                 service = id != null ? "detail" : "list";
             }
             String success = "";
-            
+
             int thisPage = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));
-            int type = request.getParameter("type") == null || request.getParameter("type").isEmpty() ? 0 : Integer.parseInt(request.getParameter("type"));
+            int type = request.getParameter("type") == null || request.getParameter("type").isEmpty() ? ((List<Subject>) session.getAttribute("LIST_SUBJECT")).get(0).getSubject_id() : Integer.parseInt(request.getParameter("type"));
+            List<Iteration> list = DAO.IterationDAO.getInstance().getList(type, login, "", 0, Integer.MAX_VALUE, "iteration_id", true, true);
+            Integer iteration = request.getParameter("iteration") != null && !request.getParameter("iteration").isEmpty() ? Integer.parseInt(request.getParameter("iteration")) : null;
+            request.setAttribute("LIST_ITERATION", list);
             switch (service) {
                 case "list":
                     String search = request.getParameter("search");
@@ -72,7 +74,7 @@ public class CriteriaServlet extends HttpServlet {
                     String sort = request.getParameter("sort");
                     boolean statusSort = request.getParameter("sortStatus") == null ? true : Boolean.parseBoolean(request.getParameter("sortStatus"));
                     if (sort == null) {
-                        sort = request.getParameter("previousSort") == null ? "criteria_id" : (String) request.getParameter("previousSort");
+                        sort = request.getParameter("previousSort") == null ? "iteration_id" : (String) request.getParameter("previousSort");
                         statusSort = true;
                     } else {
                         if (sort.equals((String) request.getParameter("previousSort"))) {
@@ -84,24 +86,24 @@ public class CriteriaServlet extends HttpServlet {
                     if (statusFilter != null) {
                         request.setAttribute("SORT_FILTER", statusFilter);
                     }
-                    if (teamEvalFilter != null) {
-                        request.setAttribute("SORT_TEAMEVAL", teamEvalFilter);
+                    if (type > 0) {
+                        request.setAttribute("SUBJECT_CHOOSE", DAO.SubjectDAO.getInstance().getSubject(type));
+                    }
+                    if (iteration != null) {
+                        request.setAttribute("SORT_ITERATION", DAO.IterationDAO.getInstance().getIteration(iteration));
                     }
 
                     request.setAttribute("SORT_CRITERIA", sort);
                     request.setAttribute("SORT_STATUS", statusSort);
-                    request.setAttribute("CRITERIA_SIZE", (int) Math.ceil(DAO.CriteriaDAO.getInstance().countRows("evaluation_criteria", search,
-                            (teamEvalFilter == null ? "" : " and team_evaluation= " + teamEvalFilter) + (statusFilter == null ? "" : " and status= " + statusFilter) + (login.getRole_id() == 2 ? (type == 0 ? " and iteration_id in (select iteration_id from studentmanagement.iteration join subject on subject.subject_id = iteration.subject_id"
+                    request.setAttribute("LIST_CRITERIA", DAO.CriteriaDAO.getInstance().getList(type, search, login, (thisPage - 1) * 10, 10, sort, statusSort, statusFilter, iteration));
+                    request.setAttribute("CRITERIA_SIZE", (int) Math.ceil(DAO.CriteriaDAO.getInstance().countRows("evaluation_criteria", search, (iteration == null ? "" : " and iteration_id= " + iteration)
+                            + (statusFilter == null ? "" : " and status= " + statusFilter) + (login.getRole_id() == 2 ? (type == 0 ? " and iteration_id in (select iteration_id from iteration join subject on subject.subject_id = iteration.subject_id"
                             + " where subject.author_id = " + login.getUser_id() + ")"
-                            : " and iteration_id in (select iteration_id from studentmanagement.iteration join subject on subject.subject_id = iteration.subject_id"
+                            : " and iteration_id in (select iteration_id from iteration join subject on subject.subject_id = iteration.subject_id"
                             + " where iteration.subject_id = " + type + " and subject.author_id = " + login.getUser_id() + ")") : (type == 0 ? ""
-                            : " and iteration_id in (select iteration_id from studentmanagement.iteration join subject on subject.subject_id = iteration.subject_id where iteration.subject_id =  " + type + ")"))) * 1.0 / 10));
+                            : " and iteration_id in (select iteration_id from iteration join subject on subject.subject_id = iteration.subject_id where iteration.subject_id =  " + type + ")"))) * 1.0 / 10));
                     request.setAttribute("SEARCH_WORD", search);
                     request.setAttribute("THIS_PAGE", thisPage);
-                    if (type > 0) {
-                        request.setAttribute("SUBJECT_CHOOSE", DAO.SubjectDAO.getInstance().getSubject(type));
-                    }
-                    request.setAttribute("LIST_CRITERIA", DAO.CriteriaDAO.getInstance().getList(type, search, login, (thisPage - 1) * 10, 10, sort, statusSort, statusFilter, teamEvalFilter));
                     dispathForward(request, response, "criteria/list.jsp");
                     break;
                 case "changeStatus":
@@ -167,14 +169,12 @@ public class CriteriaServlet extends HttpServlet {
                         dispathForward(request, response, "criteria/detail.jsp");
                     } else {
                         Integer subject_id = request.getParameter("subject_id") != null ? Integer.parseInt(request.getParameter("subject_id")) : null;
-                        Integer iteration = request.getParameter("iteration_id") != null ? Integer.parseInt(request.getParameter("iteration_id")) : null;
+                        iteration = request.getParameter("iteration_id") != null ? Integer.parseInt(request.getParameter("iteration_id")) : null;
                         if (subject_id != null && submit.equals("changeSubject")) {
                             request.setAttribute("SUBJECT_CHOOSE", DAO.SubjectDAO.getInstance().getSubject(subject_id));
-                            request.setAttribute("LIST_ITERATION", DAO.IterationDAO.getInstance().getList(subject_id, login, "", 0, Integer.MAX_VALUE, "iteration_name", true, true));
                             dispathForward(request, response, "criteria/detail.jsp");
                         } else {
                             status = request.getParameter("status") != null;
-
                             title = request.getParameter("title");
                             team_eval = request.getParameter("team_eval") != null;
                             description = request.getParameter("description");

@@ -79,7 +79,9 @@ public class DashBoardServlet extends HttpServlet {
             }
             session.setAttribute("SETTING_LIST_CLASS", list);
             session.setAttribute("SETTING_LIST_SUBJECT", DAO.SettingDAO.getInstance().getList(DashBoardServlet.findKey(type, "subject setting"), true, "", 0, Integer.MAX_VALUE, "setting_id", true));
-            session.setAttribute("LIST_FUNCTION_STATUS", DAO.ClassSettingDAO.getInstance().getList(function_status, listclass.get(0).getClass_id(), "", login, 0, Integer.MAX_VALUE, "setting_id", true, 1));
+            if (listclass != null && listclass.size() > 0) {
+                session.setAttribute("LIST_FUNCTION_STATUS", DAO.ClassSettingDAO.getInstance().getList(function_status, listclass.get(0).getClass_id(), "", login, 0, Integer.MAX_VALUE, "setting_id", true, 1));
+            }
             if (login.getRole_id() < 4) {
                 dispathForward(request, response, "/index.jsp");
             } else {

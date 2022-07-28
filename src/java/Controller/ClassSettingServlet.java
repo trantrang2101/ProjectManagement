@@ -120,23 +120,14 @@ public class ClassSettingServlet extends HttpServlet {
                                     GitlabAPI api = GitlabAPI.connect("https://gitlab.com/", cl.getApiToken());
                                     try {
                                         GitlabGroup group = api.getGroup(spaceName);
-                                        List<String> name = new ArrayList<>();
                                         for (ClassSetting s : settings) {
                                             if (!s.getSetting_title().equalsIgnoreCase("Function Status")) {
                                                 try {
-                                                    name.add(s.getSetting_title());
                                                     GitlabLabel label = createLabel(api, group, s.getSetting_title());
-                                                    System.out.println(label.getName());
                                                 } catch (Exception e) {
                                                     e.printStackTrace(new PrintWriter(errors));
                                                     logger.error(errors.toString());
                                                 }
-                                            }
-                                        }
-                                        List<GitlabLabel> listGitlab = findLabels(api, group);
-                                        for (GitlabLabel git : listGitlab) {
-                                            if (!name.contains(git.getName())) {
-                                                deleteLabel(api, group, git.getName());
                                             }
                                         }
                                     } catch (Exception e) {

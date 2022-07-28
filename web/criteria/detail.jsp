@@ -60,12 +60,6 @@
                             </div>
                             <div class="card card-waves p-4 mb-4 mt-5">
                                 <div class="row align-items-end">
-                                    <c:if test="${criteriaChoose!=null}">
-                                        <div class="mb-3 col-xl-6 col-md-3">
-                                            <label for="id" class="form-label">Criteria ID</label>
-                                            <input type="text" class="form-control border-0 border-bottom ${loginUser.getRole_id()>2?'bg-primary-soft':'bg-transparent'}" value="${criteriaChoose.criteria_id}" disabled="">
-                                        </div>
-                                    </c:if>
                                     <div class="mb-3 col">
                                         <c:choose>
                                             <c:when test="${criteriaChoose != null}" >
@@ -103,7 +97,7 @@
                                                 <c:choose>
                                                     <c:when test="${criteriaChoose != null}" >
                                                         <div class="mb-3 col-xl-6 col-md-12">
-                                                            <label ${loginUser.getRole_id()>2?'disabled=""':''} class="form-label" for="iteration_id">Iteration Name</label>
+                                                            <label ${loginUser.getRole_id()>2?'disabled=""':''} class="form-label" for="iteration_id">Iteration Name<span style="color: red">*</span></label>
                                                             <input type="text" required=""  class="form-control border-0 border-bottom ${loginUser.getRole_id()>2?'bg-primary-soft':'bg-transparent'}" value="${criteriaChoose.getIteration().getIteration_name()}" disabled="">
                                                             <input type="text" class="form-control" value="${criteriaChoose.getIteration().getIteration_id()}" hidden="">
                                                         </div>
@@ -170,7 +164,7 @@
                                             </div>
                                             <div class="row">   
                                                 <div class="mb-3 col-xl-6 col-md-12 order-0">
-                                                    <label for="title" class="form-label">Criteria Title</label>
+                                                    <label for="title" class="form-label">Criteria Title<span style="color: red">*</span></label>
                                                     <input type="submit" hidden="" name="submitChange" value="change">
                                                     <input type="text" name="id" class="form-control" value="${criteriaChoose.criteria_id}" hidden="">
                                                     <input type="text" hidden="" class="form-control border-0 border-bottom ${loginUser.getRole_id()>2?'bg-primary-soft':'bg-transparent'}" value="${criteriaChoose!=null ? criteriaChoose.getIteration().getSubject().getSubject_id() : (subjectChoose!=null?subjectChoose.getSubject_id():'')}" name="subject_id">
@@ -178,11 +172,11 @@
                                                     <input type="text" ${loginUser.getRole_id()>2?'disabled=""':''} id="title" class="form-control border-0 border-bottom ${loginUser.getRole_id()>2?'bg-primary-soft':'bg-transparent'}" value="${criteriaChoose!=null ? criteriaChoose.getCriteria_title() : ""}" name="title">
                                                 </div>
                                                 <div class="mb-3 col-xl-6 col-md-4 order-xl-0 order-sm-1">
-                                                    <label for="order" class="form-label">Criteria Order</label>
+                                                    <label for="order" class="form-label">Criteria Order<span style="color: red">*</span></label>
                                                     <input type="number" ${loginUser.getRole_id()>2?'disabled=""':''} required="" name="order" class="form-control border-0 border-bottom ${loginUser.getRole_id()>2?'bg-primary-soft':'bg-transparent'}" value="${criteriaChoose!=null ? criteriaChoose.getCriteria_order() : "1"}" min="1" max="10">
                                                 </div>
                                                 <div class="mb-3 col-xl-6 col-md-4">
-                                                    <label for="weight" class="form-label">Evaluation Weight(%) </label>
+                                                    <label for="weight" class="form-label">Evaluation Weight(%)<span style="color: red">*</span> </label>
                                                     <input ${loginUser.getRole_id()>2?'disabled=""':''} type="number" id="weight" required="" name="weight" class="form-control border-0 border-bottom ${loginUser.getRole_id()>2?'bg-primary-soft':'bg-transparent'}" value="${criteriaChoose!=null ? criteriaChoose.getEvaluation_weight() : "1"}" min="1"  max="${!criteriaChoose.isStatus()?"100":100 - criteriaChoose.getIteration().getIterationTotalWeight() + criteriaChoose.getEvaluation_weight()}"  >
                                                     <c:if test="${criteriaChoose != null}">
                                                         <p id="weightNoti" style="font-size: medium; color: red">Total weight of this iteration is ${criteriaChoose.getIteration().getIterationTotalWeight()}% </p>
@@ -191,13 +185,13 @@
                                                     <p id="weightNoti" style="font-size: medium;color: red "></p>
                                                 </div>                       
                                                 <div class="mb-3 col-xl-6 col-md-4">
-                                                    <label for="loc" class="form-label">Max Loc</label>
+                                                    <label for="loc" class="form-label">Max Loc<span style="color: red">*</span></label>
                                                     <input ${loginUser.getRole_id()>2?'disabled=""':''} type="number"  required="" name="loc" class="form-control border-0 border-bottom ${loginUser.getRole_id()>2?'bg-primary-soft':'bg-transparent'}" value="${criteriaChoose!=null ? criteriaChoose.getMax_loc() : "10"}" min="10" max="1000">
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class=" col-lg-12">
-                                                    <label for="description" class="form-label">Criteria Description</label>
+                                                    <label for="description" class="form-label">Criteria Description<span style="color: red">*</span></label>
                                                     <textarea ${loginUser.getRole_id()>2?'disabled=""':''} type="text" pattern="\d" required="" name="description" class="form-control border-0 border-bottom ${loginUser.getRole_id()>2?'bg-primary-soft':'bg-transparent'}"> ${criteriaChoose!=null ? criteriaChoose.getCriteria_description() : ""}</textarea>
                                                 </div>
                                             </div>

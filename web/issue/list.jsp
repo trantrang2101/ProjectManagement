@@ -179,6 +179,7 @@
                                                     <th><button class="bg-transparent border-0" type="submit" name="sort" value="milestone_id"><b>Milestone</b><i class="fa-solid fa-sort"></i></button></th>
                                                     <th><button class="bg-transparent border-0" type="submit" name="sort" value="function_id"><b>Function</b><i class="fa-solid fa-sort"></i></button></th>
                                                     <th><button class="bg-transparent border-0" type="submit" name="sort" value="status"><b>Status</b><i class="fa-solid fa-sort"></i></button></th>
+                                                    <th><button class="bg-transparent border-0" type="submit" name="sort" value="label"><b>Label</b><i class="fa-solid fa-sort"></i></button></th>
                                                     <th>Actions</th>
                                                 </tr>
                                             </form>
@@ -186,7 +187,7 @@
                                             <tbody>
                                                 <c:choose>
                                                     <c:when test="${requestScope.LIST_ISSUE.size()==0}">
-                                                        <tr><td class="dataTables-empty" colspan="8">No results match your search query</td></tr>
+                                                        <tr><td class="dataTables-empty" colspan="13">No results match your search query</td></tr>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <c:forEach var="issue" items="${requestScope.LIST_ISSUE}">
@@ -196,12 +197,13 @@
                                                                 <td>${issue.getIssue_title()}</td>
                                                                 <td>${issue.getGitlab_id()}</td>
                                                                 <td>${issue.getGitlab_url()}</td>
-                                                                <td>${issue.getCreated_at()}</td>
-                                                                <td>${issue.getDue_date()}</td>
+                                                                <td>${issue.getCreatedAt_format()}</td>
+                                                                <td>${issue.getDueDate_format()}</td>
                                                                 <td class="text-center">${issue.getTeam().getTeam_name()}</td>
                                                                 <td class="text-center">${issue.getMilestone().getMilestone_name()}</td>
                                                                 <td class="text-center">${issue.getFunction().getFunction_name()}</td>
                                                                 <td >${issue.getIssueStatus().setting_title}</td>
+                                                                <td >${issue.getIssueLabel().setting_title}</td>
                                                                 <td class="text-center">
                                                                     <a href="issue?id=${issue.getIssue_id()}&service=detail">
                                                                         <i data-feather="edit">Issue ${issue.getIssue_id()}</i>
@@ -264,66 +266,66 @@
                 </div>
             </div>
         </div>
-        <script>
-            function refreshTable() {
-                document.querySelector('#importFooter').style.display = "none";
-                document.getElementById('display_excel_data').innerHTML = '';
-            }
-            function displayJsonToHtmlTable(jsonData) {
-                var table = document.getElementById("display_excel_data");
-                if (jsonData.length > 0) {
-                    var htmlData = '<tr class="table-primary"><th>Title</th><th>Description</th><th>Assignee(mail)</th><th>Milestone</th><th>Type</th><th>Function</th></tr>';
-                    for (var i = 0; i < jsonData.length; i++) {
-                        var row = jsonData[i];
-                        htmlData += '<tr><td>' + row["Title"] + '</td><td>' + row["Description"] + '</td><td>' + row["Assignee(mail)"] + '</td><td>' + row["Milestone"] + '</td><td>' + row["Type"] + '</td><td>' + row["Function"] + '</td></tr>';
-                    }
-                    table.innerHTML = htmlData;
-                    document.querySelector('#importFooter').style.display = "flex";
-                } else {
-                    table.innerHTML = 'There is no data in Excel';
-                }
-            }
-            function excelFileToJSON(file) {
-                try {
-                    var reader = new FileReader();
-                    reader.readAsBinaryString(file);
-                    reader.onload = function (e) {
-                        var data = e.target.result;
-                        var workbook = XLSX.read(data, {
-                            type: 'binary'
-                        });
-                        var result = {};
-                        var firstSheetName = workbook.SheetNames[0];
-                        //reading only first sheet data
-                        var jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheetName]);
-//                    alert(JSON.stringify(jsonData));
-                        //displaying the json result into HTML table
-                        displayJsonToHtmlTable(jsonData);
-                    }
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-            function upload() {
-                var files = document.getElementById('inputExcel').files;
-                if (files.length == 0) {
-                    vNotify.error(
-                            {text: '${error}', title: 'Please choose any file...'}
-                    );
-                    return;
-                }
-                var filename = files[0].name;
-                var extension = filename.substring(filename.lastIndexOf(".")).toUpperCase();
-                if (extension == '.XLS' || extension == '.XLSX') {
-                    //Here calling another method to read excel file into json
-                    excelFileToJSON(files[0]);
-                } else {
-                    vNotify.error(
-                            {text: '${error}', title: 'Please select a valid excel file.'}
-                    );
-                }
-            }
-        </script>
         <script src="js/scripts.js"></script>
+        <script>
+                                                            function refreshTable() {
+                                                                document.querySelector('#importFooter').style.display = "none";
+                                                                document.getElementById('display_excel_data').innerHTML = '';
+                                                            }
+                                                            function displayJsonToHtmlTable(jsonData) {
+                                                                var table = document.getElementById("display_excel_data");
+                                                                if (jsonData.length > 0) {
+                                                                    var htmlData = '<tr class="table-primary"><th>Title</th><th>Description</th><th>Assignee(mail)</th><th>Milestone</th><th>Type</th><th>Function</th></tr>';
+                                                                    for (var i = 0; i < jsonData.length; i++) {
+                                                                        var row = jsonData[i];
+                                                                        htmlData += '<tr><td>' + row["Title"] + '</td><td>' + row["Description"] + '</td><td>' + row["Assignee(mail)"] + '</td><td>' + row["Milestone"] + '</td><td>' + row["Type"] + '</td><td>' + row["Function"] + '</td></tr>';
+                                                                    }
+                                                                    table.innerHTML = htmlData;
+                                                                    document.querySelector('#importFooter').style.display = "flex";
+                                                                } else {
+                                                                    table.innerHTML = 'There is no data in Excel';
+                                                                }
+                                                            }
+                                                            function excelFileToJSON(file) {
+                                                                try {
+                                                                    var reader = new FileReader();
+                                                                    reader.readAsBinaryString(file);
+                                                                    reader.onload = function (e) {
+                                                                        var data = e.target.result;
+                                                                        var workbook = XLSX.read(data, {
+                                                                            type: 'binary'
+                                                                        });
+                                                                        var result = {};
+                                                                        var firstSheetName = workbook.SheetNames[0];
+                                                                        //reading only first sheet data
+                                                                        var jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheetName]);
+//                    alert(JSON.stringify(jsonData));
+                                                                        //displaying the json result into HTML table
+                                                                        displayJsonToHtmlTable(jsonData);
+                                                                    }
+                                                                } catch (e) {
+                                                                    console.error(e);
+                                                                }
+                                                            }
+                                                            function upload() {
+                                                                var files = document.getElementById('inputExcel').files;
+                                                                if (files.length == 0) {
+                                                                    vNotify.error(
+                                                                            {text: '${error}', title: 'Please choose any file...'}
+                                                                    );
+                                                                    return;
+                                                                }
+                                                                var filename = files[0].name;
+                                                                var extension = filename.substring(filename.lastIndexOf(".")).toUpperCase();
+                                                                if (extension == '.XLS' || extension == '.XLSX') {
+                                                                    //Here calling another method to read excel file into json
+                                                                    excelFileToJSON(files[0]);
+                                                                } else {
+                                                                    vNotify.error(
+                                                                            {text: '${error}', title: 'Please select a valid excel file.'}
+                                                                    );
+                                                                }
+                                                            }
+        </script>
     </body>
 </html>

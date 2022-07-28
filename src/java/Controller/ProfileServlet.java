@@ -139,6 +139,9 @@ public class ProfileServlet extends HttpServlet {
                     } else {
                         roll_number = "";
                     }
+                    if (date_of_birth.isEmpty()) {
+                        date_of_birth=null;
+                    }
                     User update = new User(login.getUser_id(), roll_number, full_name, gender, date_of_birth, email, login.getRoll_number(), mobile, login.getAvatar_link(), facebook_link, role_id, true);
                     if (check && DAO.UserDAO.getInstance().updateUser(update)) {
                         AppUtils.storeLoginedUser(request.getSession(), DAO.UserDAO.getInstance().getUser(email));

@@ -52,13 +52,31 @@
                                                 </c:choose>
                                             </button>
                                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                <a class="nav-link" href="criteria?${requestScope.SORT_FILTER==null?"":"&statusFilter=".concat(requestScope.SORT_FILTER)}${requestScope.SORT_TEAMEVAL==null?"":"&teamEvalFilter=".concat(requestScope.SORT_TEAMEVAL)}">All</a>
+                                                <a class="nav-link" href="criteria?${requestScope.SORT_FILTER==null?"":"&statusFilter=".concat(requestScope.SORT_FILTER)}${requestScope.SORT_ITERATION!=null?"&iteration=".concat(requestScope.SORT_ITERATION.getIteration_id()):""}${requestScope.SORT_ITERATION==null?"":"&iteration=".concat(requestScope.SORT_ITERATION)}">All</a>
                                                 <c:forEach items="${sessionScope.LIST_SUBJECT}" var="subject">
-                                                    <a class="dropdown-item text-capitalize" href="criteria?type=${subject.getSubject_id()}${requestScope.SORT_FILTER==null?"":"&statusFilter=".concat(requestScope.SORT_FILTER)} ${requestScope.SORT_TEAMEVAL==null?"":"&teamEvalFilter=".concat(requestScope.SORT_TEAMEVAL)}">${subject.getSubject_code()}-${subject.getSubject_name()}</a>
+                                                    <a class="dropdown-item text-capitalize" href="criteria?type=${subject.getSubject_id()}${requestScope.SORT_FILTER==null?"":"&statusFilter=".concat(requestScope.SORT_FILTER)}${requestScope.SORT_ITERATION!=null?"&iteration=".concat(requestScope.SORT_ITERATION.getIteration_id()):""}">${subject.getSubject_code()}-${subject.getSubject_name()}</a>
                                                 </c:forEach>
                                             </div>
                                         </div>
                                         <div class="dropdown " style="margin-right: 10px;" >
+                                            <button class="form-select text-capitalize" id="dropdownMenuButton" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <c:choose>
+                                                    <c:when test="${requestScope.SORT_ITERATION!=null}">
+                                                        ${requestScope.SORT_ITERATION.iteration_name}
+                                                    </c:when>                                
+                                                    <c:otherwise>
+                                                        All Iteration
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </button>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                <a class="nav-link" href="criteria?${requestScope.SUBJECT_CHOOSE==null?"":"&type=".concat(requestScope.SUBJECT_CHOOSE.getSubject_id())}${requestScope.SORT_FILTER==null?"":"&statusFilter=".concat(requestScope.SORT_FILTER)}">All</a>
+                                                <c:forEach items="${requestScope.LIST_ITERATION}" var="iteraitonChoose">
+                                                    <a class="dropdown-item text-capitalize" href="criteria?iteration=${iteraitonChoose.getIteration_id()}${requestScope.SORT_FILTER==null?"":"&statusFilter=".concat(requestScope.SORT_FILTER)}${requestScope.SUBJECT_CHOOSE==null?"":"&type=".concat(requestScope.SUBJECT_CHOOSE.getSubject_id())}">${iteraitonChoose.iteration_name}</a>
+                                                </c:forEach>
+                                            </div>
+                                        </div>
+                                        <div class="dropdown">
                                             <button class="form-select text-capitalize" id="dropdownMenuButton" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <c:choose>
                                                     <c:when test="${requestScope.SORT_FILTER!=null}">
@@ -70,26 +88,9 @@
                                                 </c:choose>
                                             </button>
                                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                <a class="nav-link" href="criteria?${requestScope.SORT_TEAMEVAL==null?"":"&teamEvalFilter=".concat(requestScope.SORT_TEAMEVAL)}${requestScope.SUBJECT_CHOOSE==null?"":"&type=".concat(requestScope.SUBJECT_CHOOSE.getSubject_id())}">All</a>
-                                                <a class="nav-link text-capitalize" href="criteria?statusFilter=1${requestScope.SUBJECT_CHOOSE==null?"":"&type=".concat(requestScope.SUBJECT_CHOOSE.getSubject_id())}${requestScope.SORT_TEAMEVAL==null?"":"&teamEvalFilter=".concat(requestScope.SORT_TEAMEVAL)}">Activate</a>
-                                                <a class="nav-link text-capitalize" href="criteria?statusFilter=0${requestScope.SUBJECT_CHOOSE==null?"":"&type=".concat(requestScope.SUBJECT_CHOOSE.getSubject_id())}${requestScope.SORT_TEAMEVAL==null?"":"&teamEvalFilter=".concat(requestScope.SORT_TEAMEVAL)}">Deactivate</a>
-                                            </div>
-                                        </div>
-                                        <div class="dropdown">
-                                            <button class="form-select text-capitalize" id="dropdownMenuButton" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <c:choose>
-                                                    <c:when test="${requestScope.SORT_TEAMEVAL!=null}">
-                                                        ${requestScope.SORT_TEAMEVAL==1?"Activate":"Deactivate"}
-                                                    </c:when>                                
-                                                    <c:otherwise>
-                                                        Team Evaluation
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </button>
-                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                 <a class="nav-link" href="criteria?${requestScope.SUBJECT_CHOOSE==null?"":"&type=".concat(requestScope.SUBJECT_CHOOSE.getSubject_id())}${requestScope.SORT_FILTER==null?"":"&statusFilter=".concat(requestScope.SORT_FILTER)}">All</a>
-                                                <a class="nav-link text-capitalize" href="criteria?teamEvalFilter=1${requestScope.SORT_FILTER==null?"":"&statusFilter=".concat(requestScope.SORT_FILTER)}${requestScope.SUBJECT_CHOOSE==null?"":"&type=".concat(requestScope.SUBJECT_CHOOSE.getSubject_id())}">Activate</a>
-                                                <a class="nav-link text-capitalize" href="criteria?teamEvalFilter=0${requestScope.SORT_FILTER==null?"":"&statusFilter=".concat(requestScope.SORT_FILTER)}${requestScope.SUBJECT_CHOOSE==null?"":"&type=".concat(requestScope.SUBJECT_CHOOSE.getSubject_id())}">Deactivate</a>
+                                                <a class="nav-link text-capitalize" href="criteria?statusFilter=1${requestScope.SUBJECT_CHOOSE==null?"":"&type=".concat(requestScope.SUBJECT_CHOOSE.getSubject_id())}${requestScope.SORT_ITERATION!=null?"&iteration=".concat(requestScope.SORT_ITERATION.getIteration_id()):""}">Activate</a>
+                                                <a class="nav-link text-capitalize" href="criteria?statusFilter=0${requestScope.SUBJECT_CHOOSE==null?"":"&type=".concat(requestScope.SUBJECT_CHOOSE.getSubject_id())}${requestScope.SORT_ITERATION!=null?"&iteration=".concat(requestScope.SORT_ITERATION.getIteration_id()):""}">Deactivate</a>
                                             </div>
                                         </div>
                                     </div>

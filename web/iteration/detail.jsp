@@ -55,13 +55,9 @@
                             <form action="iteration" method="POST">
                                 <div class="card card-waves p-4 mb-4 mt-5">
                                     <div class="row align-items-end">
-                                        <div class="mb-3 col-sm-6 col-lg-6">
-                                            <label for="id" class="form-label">Iteration ID</label>
-                                            <input type="text" class="form-control border-0 border-bottom ${loginUser.getRole_id()>2?'bg-primary-soft':'bg-transparent'}" value="${iter.iteration_id}" disabled="">
-                                            <input type="text" name="id" class="form-control" value="${iter.iteration_id}" hidden="">
-                                        </div>
+                                        <input type="text" name="id" class="form-control" value="${iter.iteration_id}" hidden="">
                                         <div class="mb-3 col-lg-6 col-sm-6">
-                                            <label for="subject_id" class="form-label">Subject ID</label>
+                                            <label for="subject_id" class="form-label">Subject Code<span style="color: red">*</span></label>
                                             <select id="subject_id" ${loginUser.getRole_id()<3?"required=''":"disabled=''"} name="subject_id" class="form-control col border-0 border-bottom ${loginUser.getRole_id()>2?'bg-primary-soft':'bg-transparent'}">
                                                 <c:forEach items="${sessionScope.LIST_SUBJECT}" var="subject">
                                                     <c:choose>
@@ -78,11 +74,11 @@
                                     </div>
                                     <div class="row">
                                         <div class="mb-3 col-lg-6 col-sm-6">
-                                            <label for="title" class="form-label">Iteration Name</label>
+                                            <label for="title" class="form-label">Iteration Name<span style="color: red">*</span></label>
                                             <input type="text" ${loginUser.getRole_id()<3?"required=''":"disabled=''"} name="title" class="form-control border-0 border-bottom ${loginUser.getRole_id()>2?'bg-primary-soft':'bg-transparent'}" value="${iter.iteration_name}">
                                         </div>
                                         <div class="mb-3 col-xl-4 col-md-3">
-                                            <label for="duration" class="form-label">Iteration Duration</label>
+                                            <label for="duration" class="form-label">Iteration Duration<span style="color: red">*</span></label>
                                             <input type="text" pattern="\d*" ${loginUser.getRole_id()<3?"required=''":"disabled=''"} name="duration" class="form-control border-0 border-bottom ${loginUser.getRole_id()>2?'bg-primary-soft':'bg-transparent'}" value="${iter.duration}">
                                         </div>
                                         <div class="mb-3 col-xl-2 col-md-3 d-flex flex-column justify-content-between">

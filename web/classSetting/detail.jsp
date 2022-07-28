@@ -45,12 +45,8 @@
                             <form action="classSetting" method="POST">
                                 <div class="card card-waves p-4 mb-4 mt-5">
                                     <div class="row align-items-end">
-                                        <div class="mb-3 col">
-                                            <label for="id" class="form-label">Class Setting ID</label>
-                                            <input type="text" class="form-control border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}" value="${setting.setting_id}" disabled="">
+                                        <div class="mb-3 col-xl-9 col-md-6">
                                             <input type="text" name="id" class="form-control" value="${setting.setting_id}" hidden="">
-                                        </div>
-                                        <div class="mb-3 col">
                                             <label for="class_id" class="form-label border-0 border-bottom">Class ID</label>
                                             <select ${loginUser.getRole_id()<4?"":"disabled=''"} name="classId" class="form-control border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}" id="classId">
                                                 <c:forEach items="${sessionScope.LIST_CLASS}" var="class">
@@ -65,7 +61,7 @@
                                                 </c:forEach>
                                             </select>
                                         </div>
-                                        <div class="mb-3 col">
+                                        <div class="mb-3 col-xl-3 col-md-6">
                                             <label for="typeID" class="form-label">Type</label>
                                             <select id="typeID" ${loginUser.getRole_id()<4?"":"disabled=''"} class="form-control col border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}" name="typeID">
                                                 <c:forEach items="${sessionScope.SETTING_LIST_CLASS}" var="type">
@@ -83,7 +79,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="mb-3 col-xl-9 col-md-6">
-                                            <label for="title" class="form-label">Class Setting Title</label>
+                                            <label for="title" class="form-label">Class Setting Title<span style="color: red">*</span></label>
                                             <input type="text" ${loginUser.getRole_id()<4?"":"disabled=''"} required="" name="title" class="form-control border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}" value="${setting.setting_title}">
                                         </div>
                                         <div class="mb-3 col-xl-3 col-md-6 d-flex flex-column justify-content-between">
@@ -95,12 +91,12 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="mb-3 col">
-                                            <label for="value" class="form-label">Setting Value</label>
+                                        <div class="mb-3 col-xl-9 col-md-6">
+                                            <label for="value" class="form-label">Setting Value<span style="color: red">*</span></label>
                                             <input type="text" ${loginUser.getRole_id()<4?"":"disabled=''"} pattern="\d*" required="" name="value" class="form-control border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}" value="${setting.setting_value}">
                                         </div>
-                                        <div class="mb-3 col">
-                                            <label for="display" class="form-label">Display Order</label>
+                                        <div class="mb-3 col-xl-3 col-md-6">
+                                            <label for="display" class="form-label">Display Order<span style="color: red">*</span></label>
                                             <input type="text" ${loginUser.getRole_id()<4?"":"disabled=''"} pattern="\d*" required="" name="display" class="form-control border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}" value="${setting.display_order}">
                                         </div>
                                         <div class="mb-3 form-floating">

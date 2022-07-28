@@ -7,6 +7,7 @@ package Controller;
 
 import Model.Entity.*;
 import Utils.AppUtils;
+import Utils.Threadable;
 import java.io.*;
 import java.text.ParseException;
 import java.util.*;
@@ -58,11 +59,15 @@ public class ClassUserServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User login = (User) AppUtils.getLoginedUser(session);
         List<String> error = new ArrayList<>();
+        List<Classroom> listClass = (List<Classroom>) session.getAttribute("LIST_CLASS");
         Classroom classroom = (Classroom) request.getAttribute("CLASS_CHOOSE");
         String classID = request.getParameter("class");
         if (classID != null) {
             classroom = DAO.ClassDAO.getInstance().getClass(login, Integer.parseInt(classID));
         } else {
+            if (classroom == null) {
+                classroom = listClass.get(0);
+            }
             classID = String.valueOf(classroom.getClass_id());
         }
         request.setAttribute("CLASS_CHOOSE", classroom);
@@ -108,8 +113,8 @@ public class ClassUserServlet extends HttpServlet {
                     request.setAttribute("THIS_PAGE", thisPage);
                     request.setAttribute("SORT_CLASS_USER", sort);
                     request.setAttribute("SORT_STATUS", statusSort);
-                    request.setAttribute("CLASS_USER_SIZE", (int) Math.ceil(DAO.ClassDAO.getInstance().countRows("class_user", search, (search.isEmpty() ? "" : " or user_id in (select user_id from `studentmanagement`.`user` where (`email` like \"%" + search + "%\" or `full_name` like \"%" + search + "%\" or `roll_number` like \"%" + search + "%\"))") + " and class_id=" + classID + (type != null ? " and team_id=" + type : "") + (statusChoose != null ? " and status = " + statusChoose : "")
-                            + (login.getRole_id() == 1 ? "" : login.getRole_id() == 3 ? " and class_id in (select class_id from `studentmanagement`.`class` where trainer_id=" + login.getUser_id() + ")" : " and status=1".concat(login.getRole_id() == 4 ? "" : " and class_id in (select class_id from `studentmanagement`.`class`,`studentmanagement`.`subject` where class.subject_id=subject.subject_id and author_id=" + login.getUser_id() + ")"))) * 1.0 / 10));
+                    request.setAttribute("CLASS_USER_SIZE", (int) Math.ceil(DAO.ClassDAO.getInstance().countRows("class_user", search, (search.isEmpty() ? "" : " or user_id in (select user_id from `user` where (`email` like \"%" + search + "%\" or `full_name` like \"%" + search + "%\" or `roll_number` like \"%" + search + "%\"))") + " and class_id=" + classID + (type != null ? " and team_id=" + type : "") + (statusChoose != null ? " and status = " + statusChoose : "")
+                            + (login.getRole_id() == 1 ? "" : login.getRole_id() == 3 ? " and class_id in (select class_id from `class` where trainer_id=" + login.getUser_id() + ")" : " and status=1".concat(login.getRole_id() == 4 ? "" : " and class_id in (select class_id from `class`,`subject` where class.subject_id=subject.subject_id and author_id=" + login.getUser_id() + ")"))) * 1.0 / 10));
                     request.setAttribute("LIST_CLASS_USER", DAO.ClassUserDAO.getInstance().getList(type, statusChoose, search, (thisPage - 1) * 10, 10, login, Integer.parseInt(classID), sort, statusSort));
                     dispathForward(request, response, "classUser/list.jsp");
                     break;
@@ -138,7 +143,7 @@ public class ClassUserServlet extends HttpServlet {
                     } else {
                         error.add("Delete failed!");
                     }
-                     url = "classUser";
+                    url = "classUser";
                     break;
                 case "update":
                     if (request.getParameter("submit") == null) {
@@ -165,7 +170,7 @@ public class ClassUserServlet extends HttpServlet {
                                 }
                             }
                         }
-                       url ="classUser?service=list&class=" + classID;
+                        url = "classUser?service=list&class=" + classID;
                     }
                     break;
                 case "add":
@@ -222,7 +227,7 @@ public class ClassUserServlet extends HttpServlet {
                                 }
                             }
                         }
-                         url ="classUser?service=list&class=" + classID;
+                        url = "classUser?service=list&class=" + classID;
                     }
                     break;
                 case "exportExcel":
@@ -258,7 +263,7 @@ public class ClassUserServlet extends HttpServlet {
                     } else {
                         error.add("Class is empty! Cannot export");
                     }
-                    url ="classUser?class=" + classID;
+                    url = "classUser?class=" + classID;
                     break;
                 case "importExcel":
                     Part filePart = request.getPart("excel");
@@ -284,6 +289,9 @@ public class ClassUserServlet extends HttpServlet {
                             for (int i = 1; i < rowNo; i++) {
                                 try {
                                     Row row = sheet.getRow(i); // returns the logical row
+                                    if (isRowEmpty(row)) {
+                                        break;
+                                    }
 //                                int id = Integer.parseInt(row.getCell(1).getStringCellValue());
                                     row.getCell(columnGroup).setCellType(Cell.CELL_TYPE_STRING);
                                     String GroupName = row.getCell(columnGroup).getStringCellValue();
@@ -304,11 +312,8 @@ public class ClassUserServlet extends HttpServlet {
                                         }
                                         if (DAO.UserDAO.getInstance().getUser(email) == null && DAO.UserDAO.getInstance().checkRollNumber(rollNumber) == null) {
                                             if (DAO.UserDAO.getInstance().addUser(new User(rollNumber, fullName, email, password, student.getSetting_id()))) {
-                                                SignupServlet.sendMail(email, "<h2>JOIN OUR TEAM NOW</h2>"
-                                                        + "<p>Come join our community as Student where you can share, learn, and discover amazing resources, connect with peers, ask questions, engage in conversations, share your best and less successful experiences. Exchange methodologies and adapt them to your needs.</p>"
-                                                        + "<span>If you accept this invatation, we are giving you an password: <h3>" + password + "</h3></span>"
-                                                        + "<p>I hope you can join our team as fast as possible! Best wishes!</p>",
-                                                        "EduProject Invited You To Our Team");
+                                                Threadable thread = new Threadable();
+                                                thread.start();
                                             }
                                         }
                                         User user = DAO.UserDAO.getInstance().getUser(email);
@@ -337,7 +342,7 @@ public class ClassUserServlet extends HttpServlet {
                             file.delete();
                         }
                     }
-                    url ="classUser?service=list&class=" + classID;
+                    url = "classUser?service=list&class=" + classID;
                     break;
             }
             logger.warn(error);
@@ -345,12 +350,12 @@ public class ClassUserServlet extends HttpServlet {
             logger.info(success);
             session.setAttribute("SUCCESS", success);
             if (!url.isEmpty()) {
-                   dispathForward(request, response,url);
+                dispathForward(request, response, url);
             }
         } catch (Exception e) {
             e.printStackTrace(new PrintWriter(errors));
             logger.error(errors.toString());
-               dispathForward(request, response,"classUser?service=list&class=" + classID);
+            dispathForward(request, response, "classUser?service=list&class=" + classID);
         }
     }
 
@@ -496,15 +501,6 @@ public class ClassUserServlet extends HttpServlet {
             cell.setCellStyle(cellStyle);
         }
         cell.setCellValue(classUser.isTeam_leader() ? "TRUE" : "");
-
-        // Create cell formula
-        // totalMoney = price * quantity
-//        cell = row.createCell(COLUMN_INDEX_TOTAL, CellType.FORMULA);
-//        cell.setCellStyle(cellStyleFormatNumber);
-//        int currentRow = row.getRowNum() + 1;
-//        String columnPrice = CellReference.convertNumToColString(COLUMN_INDEX_PRICE);
-//        String columnQuantity = CellReference.convertNumToColString(COLUMN_INDEX_QUANTITY);
-//        cell.setCellFormula(columnPrice + currentRow + "*" + columnQuantity + currentRow);
         cell = row.createCell(5);
         if (!classUser.isStatus()) {
             cell.setCellStyle(cellStyle);
@@ -563,6 +559,16 @@ public class ClassUserServlet extends HttpServlet {
         for (int columnIndex = 0; columnIndex < lastColumn; columnIndex++) {
             sheet.autoSizeColumn(columnIndex);
         }
+    }
+
+    public static boolean isRowEmpty(Row row) {
+        for (int c = row.getFirstCellNum(); c < row.getLastCellNum(); c++) {
+            Cell cell = row.getCell(c);
+            if (cell != null && cell.getCellType() != Cell.CELL_TYPE_BLANK) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static File cloneFile(HttpServletRequest httpServletRequest, Part part, String output) throws IOException, ServletException {

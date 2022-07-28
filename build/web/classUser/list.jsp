@@ -291,6 +291,9 @@
         <jsp:include page="../included/footer.jsp"/>
     </div>
     <script>
+        window.addEventListener('DOMContentLoaded', event => {
+            $("#preloader").hide();
+        });
         function refreshTable() {
             document.querySelector('#importFooter').style.display = "none";
             document.getElementById('display_excel_data').innerHTML = '';
@@ -323,7 +326,7 @@
                     var firstSheetName = workbook.SheetNames[0];
                     //reading only first sheet data
                     var jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheetName]);
-//                    alert(JSON.stringify(jsonData));
+                    //                    alert(JSON.stringify(jsonData));
                     //displaying the json result into HTML table
                     displayJsonToHtmlTable(jsonData);
                 }

@@ -19,6 +19,9 @@
     font-size: 30px !important;
     margin: 10px !important;
 }
+.ml-4{
+    margin-left: 1.5rem;
+}
 .text-dark{
     color: black!important;
 }

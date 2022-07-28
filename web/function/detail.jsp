@@ -54,10 +54,6 @@
                             <div class="card card-waves p-4 mb-4 mt-5">
 
                                 <div class="row align-items-end">
-                                    <div class="mb-3 col-sm-2 col-lg-4">
-                                        <label for="id" class="form-label">Function ID</label>
-                                        <input type="text" class="form-control border-0 border-bottom bg-transparent" value="${function.function_id}" disabled="">
-                                    </div>
                                     <div class="mb-3 col-sm-5 col-lg-4">
                                         <form action="function" method="POST">
                                             <label for="class_code" class="form-label">Class Code</label>
@@ -113,58 +109,54 @@
                                             <input type="text" name="submitForm" hidden="" value="type">
                                         </form>
                                     </div>
+                                    <div class="mb-3 col-sm-5 col-lg-4">
                                     <form action="function" method="POST">
-                                        <div class="row">
 
-                                            <div class="mb-3 col-sm-5 col-lg-4">
+                                        
 
-                                                <label for="feature_id" class="form-label">Feature</label>
+                                            <label for="feature_id" class="form-label">Feature<span style="color: red">*</span></label>
 
-                                                <select ${isDisabled?"disabled=''":""} id="feature_id" name="feature_id" class="form-control col border-0 border-bottom bg-transparent">
-                                                    <c:choose>
-                                                        <c:when test="${requestScope.LIST_FEATURE==null||requestScope.LIST_FEATURE.size()==0}">
-                                                            <option class="text-capitalize" value=null selected="">No Feature Yet</option>
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <c:forEach items="${requestScope.LIST_FEATURE}" var="feature">
+                                            <select ${isDisabled?"disabled=''":""} id="feature_id" required='' name="feature_id" class="form-control col border-0 border-bottom bg-transparent">
+                                                <c:choose>
+                                                    <c:when test="${requestScope.LIST_FEATURE==null||requestScope.LIST_FEATURE.size()==0}">
+                                                        <option class="text-capitalize" value=null selected="">No Feature Yet</option>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <c:forEach items="${requestScope.LIST_FEATURE}" var="feature">
 
-                                                                <c:choose>
-                                                                    <c:when test="${function.getFeature().feature_id==feature.feature_id}">
-                                                                        <option class="text-capitalize" value="${feature.feature_id}" selected="">${feature.feature_name}</option>
-                                                                    </c:when>
-                                                                    <c:otherwise>
-                                                                        <option class="text-capitalize" value="${feature.feature_id}">${feature.feature_name}</option>
-                                                                    </c:otherwise>
-                                                                </c:choose>
-                                                            </c:forEach>
-                                                        </c:otherwise>
-                                                    </c:choose>
-                                                </select>
+                                                            <c:choose>
+                                                                <c:when test="${function.getFeature().feature_id==feature.feature_id}">
+                                                                    <option class="text-capitalize" value="${feature.feature_id}" selected="">${feature.feature_name}</option>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <option class="text-capitalize" value="${feature.feature_id}">${feature.feature_name}</option>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </c:forEach>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </select>
 
-
-                                            </div>
-
-                                            <c:choose>
-                                                <c:when test="${loginUser.getRole_id()>3}">
-                                                    <div class="mb-9 col-sm-7 col-lg-8">
-                                                        <a href="feature?service=add&type=${requestScope.TYPE_CHOOSE.team_id}"><button type="button" class="btn btn-primary">Create New Feature</button></a>
-                                                    </div> 
-                                                </c:when>
-                                            </c:choose>
 
                                         </div>
+
                                 </div>
 
                                 <div class="row">
-                                    <div class="mb-3 col-sm-7 col-lg-8">
+                                    <div class="mb-3 col-sm-4 col-lg-4">
                                         <input type="text" name="id" class="form-control" value="${function.function_id}" hidden="">
                                         <input type="text" name="type" class="form-control" value="${function!=null?function.team_id:requestScope.TYPE_CHOOSE.team_id}" hidden="">
-                                        <label for="title" class="form-label">Function Name</label>
+                                        <label for="title" class="form-label">Function Name<span style="color: red">*</span></label>
                                         <input type="text" required='' ${isDisabled?"disabled=''":""} name="title" class="form-control border-0 border-bottom bg-transparent" value="${function.function_name}">
                                     </div>
-                                    <div class="mb-3 d-flex flex-column justify-content-start align-items-end form-check form-switch  col-sm-5 col-lg-4">
-                                        <label class="small mb-1" for="status">Status</label>
-                                        <select ${isDisabled?"disabled=''":""} id="status" name="status" class="form-control col border-0 border-bottom bg-transparent">
+                                    <div class="mb-3 col-sm-4 col-lg-4 d-flex flex-column justify-content-between align-items-start">
+
+                                        <label for="title" class="form-label">Access Roles<span style="color: red">*</span></label>
+                                        <input type="text" ${isDisabled?"disabled=''":""} required='' name="access_roles" class="form-control border-0 border-bottom bg-transparent" value="${function.access_roles}">
+                                    </div>
+                                    <div class="mb-3 d-flex flex-column justify-content-start align-items-end form-check form-switch  col-sm-4 col-lg-4">
+                                        <label class="small mb-1" for="status">Status<span style="color: red">*</span></label>
+                                        <select ${isDisabled?"disabled=''":""} id="status" name="status" required='' class="form-control col border-0 border-bottom bg-transparent">
                                             <c:forEach items="${sessionScope.LIST_FUNCTION_STATUS}" var="status">
                                                 <c:choose>
                                                     <c:when test="${(function!=null&&function.isStatus()==status.setting_value)}">
@@ -195,17 +187,13 @@
 
 
 
-                                <div class="mb-3 d-flex flex-column justify-content-between align-items-start">
 
-                                    <label for="title" class="form-label">Access Roles</label>
-                                    <input type="text" ${isDisabled?"disabled=''":""} name="access_roles" class="form-control border-0 border-bottom bg-transparent" value="${function.access_roles}">
-                                </div>
 
-                                <div class="row align-items-start">
-                                    <div class=" d-flex flex-column justify-content-end form-check form-switch  col-sm-4 col-lg-4">
-                                        <label for="complexity_id" class="form-label">Complexity</label>
+                                <div class="row">
+                                    <div class=" d-flex flex-column justify-content-end col-sm-4 col-lg-4">
+                                        <label for="complexity_id" class="form-label">Complexity<span style="color: red">*</span></label>
 
-                                        <select ${isDisabled?"disabled=''":""} id="complexity_id" name="complexity_id" class="form-control col border-0 border-bottom bg-transparent">
+                                        <select ${isDisabled?"disabled=''":""} id="complexity_id" required='' name="complexity_id" class="form-control col border-0 border-bottom bg-transparent">
                                             <c:forEach items="${requestScope.COMPLEXITY_LIST}" var="complexity">
                                                 <c:choose>
                                                     <c:when test="${(function!=null&&function.complexity_id==complexity.setting_value)}">
@@ -219,8 +207,8 @@
                                         </select>
 
                                     </div>
-                                    <div class="d-flex flex-column justify-content-end  form-check form-switch  col-sm-4 col-lg-4">
-                                        <label for="owner_id" class="form-label">Owner</label>
+                                    <div class="d-flex flex-column justify-content-end  col-sm-4 col-lg-4">
+                                        <label for="owner_id" class="form-label">Owner<span style="color: red">*</span></label>
                                         <c:choose>
                                             <c:when test="${isLeader}">
                                                 <select ${isDisabled?"disabled=''":""} id="owner_id" name="owner_id" class="form-control col border-0 border-bottom bg-transparent">
@@ -263,7 +251,7 @@
 
                                     </div>
                                     <div class=" d-flex flex-column justify-content-end  form-check form-switch  col-sm-4 col-lg-4">
-                                        <label class="form-check-label" for="priority">Priority</label>
+                                        <label class="form-check-label" for="priority">Priority <span style="color: red">*</span> </label>
                                         <input ${isDisabled?"disabled=''":""} type="number" required='' name="priority" class="form-control border-0 border-bottom bg-transparent" value="${function.priority}">
                                     </div>
                                 </div>

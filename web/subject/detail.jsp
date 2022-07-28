@@ -43,22 +43,14 @@
                             <form action="subject" method="POST">
                                 <div class="card card-waves p-4 mb-4 mt-5">
                                     <div class="row align-items-end">
-                                        <c:if test="${subjectChoose!=null}" >
-                                            <div class="mb-3 col-xl-6 col-md-3">
-                                                <label for="id" class="form-label">Subject ID</label>
-                                                <input type="text" class="form-control border-0 border-bottom ${loginUser.getRole_id()>1?'bg-primary-soft':'bg-transparent'}" value="${subjectChoose.getSubject_id()}" disabled="">
-                                                <input type="text" name="id" class="form-control" value="${subjectChoose!=null?subjectChoose.getSubject_id():''}" hidden="">
-                                            </div>
-
-                                        </c:if>
-
+                                        <input type="text" name="id" class="form-control" value="${subjectChoose!=null?subjectChoose.getSubject_id():''}" hidden="">
                                         <div class="mb-3 ${subjectChoose!=null?'col-xl-6 col-md-9':'col'}">
-                                            <label for="code" class="form-label">Subject Code</label>
+                                            <label for="code" class="form-label">Subject Code<span style="color: red">*</span></label>
                                             <input type="text" ${loginUser.getRole_id()<2?"":"disabled=''"} name="code" required="" class="form-control border-0 border-bottom ${loginUser.getRole_id()>1?'bg-primary-soft':'bg-transparent'}" value="${subjectChoose!=null?subjectChoose.getSubject_code():''}" id="code" maxlength="10">
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="name" class="form-label">Subject Name</label>
+                                        <label for="name" class="form-label">Subject Name<span style="color: red">*</span></label>
                                         <input type="text" required="" ${loginUser.getRole_id()<2?"":"disabled=''"} name="name" value="${subjectChoose!=null?subjectChoose.getSubject_name():''}" class="form-control border-0 border-bottom ${loginUser.getRole_id()>1?'bg-primary-soft':'bg-transparent'}" maxlength="255">
                                     </div>
                                     <div class="row">

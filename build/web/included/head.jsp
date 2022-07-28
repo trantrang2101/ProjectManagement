@@ -50,9 +50,8 @@
 <script>
     window.addEventListener('DOMContentLoaded', event => {
         $("#preloader").hide();
+        feather.replace();
     });
-    feather.replace();
-    $("#preloader").hide();
 //    vNotify.info(
 //            {text: 'This is an info notification.', title: 'Info Notification.'}
 //    );

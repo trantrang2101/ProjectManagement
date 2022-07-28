@@ -34,7 +34,7 @@ public class IssueDAO extends Utils.ConnectJDBC {
 
     public Issue getIssue(int id) {
         Issue Issue = null;
-        String sql = "select * from `studentmanagement`.`issue` where issue_id=" + id;
+        String sql = "select * from `issue` where issue_id=" + id;
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -49,7 +49,8 @@ public class IssueDAO extends Utils.ConnectJDBC {
                 int milestone_id = rs.getInt(10);
                 int function_id = rs.getInt(11);
                 int status = rs.getInt(12);
-                Issue = new Issue(id, assignee_id, issue_title, description, gitlab_id, gitlab_url, created_at, due_date, team_id, milestone_id, function_id, status);
+                int label = rs.getInt(13);
+                Issue = new Issue(id, assignee_id, issue_title, description, gitlab_id, gitlab_url, created_at, due_date, team_id, milestone_id, function_id, status, label);
             }
         } catch (Exception e) {
         }
@@ -58,10 +59,10 @@ public class IssueDAO extends Utils.ConnectJDBC {
 
     public List<Issue> getList(User user, String search, int start, int limit, String sort, boolean statusSort, Integer statusFilter) {
         List<Issue> list = new ArrayList<>();
-        String sql = "CALL `studentmanagement`.search('\\'%" + search + "%\\'','studentmanagement','issue','"
+        String sql = "CALL search('\\'%" + search + "%\\'','issue','"
                 + (statusFilter == null ? "" : " and status = " + statusFilter)
-                + (user == null || user.getRole_id() == 1 ? "" : (user.getRole_id() == 4 ? " and team_id in (select team_id from `studentmanagement`.`class_user` where user_id = " + user.getUser_id() + ")"
-                : (user.getRole_id() == 3 ? " and team_id in (select team_id from `studentmanagement`.`class_user`,`studentmanagement`.`class` where class_user.class_id=class.class_id and trainer_id=" + user.getUser_id() + ")" : " and team_id in (select team_id from `studentmanagement`.`class_user`,`studentmanagement`.`class`,`studentmanagement`.`subject` where subject.subject_id=class.subject_id and class_user.class_id=class.class_id and author_id=" + user.getUser_id() + ")")))
+                + (user == null || user.getRole_id() == 1 ? "" : (user.getRole_id() == 4 ? " and team_id in (select team_id from `class_user` where user_id = " + user.getUser_id() + ")"
+                : (user.getRole_id() == 3 ? " and team_id in (select team_id from `class_user`,`class` where class_user.class_id=class.class_id and trainer_id=" + user.getUser_id() + ")" : " and team_id in (select team_id from `class_user`,`class`,`subject` where subject.subject_id=class.subject_id and class_user.class_id=class.class_id and author_id=" + user.getUser_id() + ")")))
                 + "'," + start + "," + limit + ",'" + sort + "'," + statusSort + ")";
         ResultSet rs = getData(sql);
         try {
@@ -82,7 +83,8 @@ public class IssueDAO extends Utils.ConnectJDBC {
                         int milestone_id = rs1.getInt(10);
                         int function_id = rs1.getInt(11);
                         int status = rs1.getInt(12);
-                        list.add(new Issue(issue_id, assignee_id, issue_title, description, gitlab_id, gitlab_url, created_at, due_date, team_id, milestone_id, function_id, status));
+                        Integer label = rs1.getInt(13);
+                        list.add(new Issue(issue_id, assignee_id, issue_title, description, gitlab_id, gitlab_url, created_at, due_date, team_id, milestone_id, function_id, status, label));
                     } catch (Exception e) {
                         e.printStackTrace(new PrintWriter(errors));
                         logger.error(errors.toString());
@@ -98,9 +100,9 @@ public class IssueDAO extends Utils.ConnectJDBC {
 
     public boolean updateIssue(Issue issue) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`issue` SET `assignee_id` = ?, `issue_title` = ?, `description` = ?, "
+        String sql = "UPDATE `issue` SET `assignee_id` = ?, `issue_title` = ?, `description` = ?, "
                 + "`gitlab_id` = ?, `gitlab_url` = ?, `created_at` = ?, `due_date` = ?, "
-                + "`team_id` = ?, `milestone_id` = ?, `function_id` = ?, `status` = ? WHERE `issue_id` = ?;";
+                + "`team_id` = ?, `milestone_id` = ?, `function_id` = ?, `status` = ? , `label` = ? WHERE `issue_id` = ?;";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             pre.setInt(1, issue.getAssignee_id());
@@ -114,8 +116,11 @@ public class IssueDAO extends Utils.ConnectJDBC {
             pre.setInt(9, issue.getMilestone_id());
             pre.setInt(10, issue.getFunction_id());
             pre.setInt(11, issue.getStatus());
-            pre.setInt(12, issue.getIssue_id());
+            pre.setInt(12, issue.getLabel());
+            pre.setInt(13, issue.getIssue_id());
+
             check = pre.executeUpdate() > 0;
+
         } catch (SQLException ex) {
             ex.printStackTrace(new PrintWriter(errors));
             logger.error(errors.toString());
@@ -125,7 +130,7 @@ public class IssueDAO extends Utils.ConnectJDBC {
 
     public boolean updateStatus(int id, int status) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`issue` SET `status` = ? WHERE `issue_id` = ?;";
+        String sql = "UPDATE `issue` SET `status` = ? WHERE `issue_id` = ?;";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             pre.setInt(1, status);
@@ -140,8 +145,8 @@ public class IssueDAO extends Utils.ConnectJDBC {
 
     public int addIssue(Issue issue) {
         int check = -1;
-        String sql = "INSERT INTO `studentmanagement`.`issue` (`assignee_id`,`issue_title`,`description`,`gitlab_id`,`gitlab_url`,`due_date`,`team_id`,`milestone_id`,`function_id`,`status`)"
-                + "VALUES (?,?,?,?,?,?,?,?,?,?);";
+        String sql = "INSERT INTO `issue` (`assignee_id`,`issue_title`,`description`,`gitlab_id`,`gitlab_url`,`due_date`,`team_id`,`milestone_id`,`function_id`,`status`,`label`)"
+                + "VALUES (?,?,?,?,?,?,?,?,?,?,?);";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             pre.setInt(1, issue.getAssignee_id());
@@ -154,12 +159,15 @@ public class IssueDAO extends Utils.ConnectJDBC {
             pre.setInt(8, issue.getMilestone_id());
             pre.setInt(9, issue.getFunction_id());
             pre.setInt(10, issue.getStatus());
+            pre.setInt(11, issue.getLabel());
+
             if (pre.executeUpdate() > 0) {
-                ResultSet rs = getData("SELECT issue_id from `studentmanagement`.`issue` order by issue_id desc limit 1");
+                ResultSet rs = getData("SELECT issue_id from `issue` order by issue_id desc limit 1");
                 if (rs.next()) {
                     check = rs.getInt(1);
                 }
             }
+
         } catch (SQLException ex) {
             ex.printStackTrace(new PrintWriter(errors));
             logger.error(errors.toString());
@@ -169,7 +177,7 @@ public class IssueDAO extends Utils.ConnectJDBC {
 
     public int checkAddIssue(String issue_title, Integer team_id, Integer milestone_id) {
         int check = -1;
-        String sql = "SELECT team_id from `studentmanagement`.`issue` where issue_title = '" + issue_title + "' and team_id = " + team_id + " and milestone_id = " + milestone_id;
+        String sql = "SELECT team_id from `issue` where issue_title = '" + issue_title + "' and team_id = " + team_id + " and milestone_id = " + milestone_id;
         ResultSet rs = getData(sql);
         try {
             if (rs.next()) {

@@ -101,7 +101,7 @@ public class MilestoneServlet extends HttpServlet {
                     request.setAttribute("SORT_MILESTONE", sort);
                     request.setAttribute("SORT_STATUS", statusSort);
                     request.setAttribute("MILESTONE_SIZE", (int) Math.ceil(DAO.CriteriaDAO.getInstance().countRows("milestone", search, (classroom != null ? " and class_id = " + classroom : "")
-                            + (login.getRole_id() == 1 ? "" : login.getRole_id() == 3 ? " and class_id in (select class_id from `studentmanagement`.`class` where trainer_id=" + login.getUser_id() + ")" : (login.getRole_id() == 4 ? " and class_id in (select class_id from `studentmanagement`.`class_user` where user_id=" + login.getUser_id() + ")" : " and class_id in (select class_id from `studentmanagement`.`class`,`studentmanagement`.`subject` where class.subject_id=subject.subject_id and author_id=" + login.getUser_id() + ")"))
+                            + (login.getRole_id() == 1 ? "" : login.getRole_id() == 3 ? " and class_id in (select class_id from `class` where trainer_id=" + login.getUser_id() + ")" : (login.getRole_id() == 4 ? " and class_id in (select class_id from `class_user` where user_id=" + login.getUser_id() + ")" : " and class_id in (select class_id from `class`,`subject` where class.subject_id=subject.subject_id and author_id=" + login.getUser_id() + ")"))
                             + (statusFilter != null ? " and status=" + statusFilter : "")) * 1.0 / 10));
                     request.setAttribute("SEARCH_WORD", search);
                     request.setAttribute("THIS_PAGE", thisPage);

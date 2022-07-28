@@ -93,40 +93,36 @@
                                                 <div class="card-header">Account Details</div>
                                                 <div class="card-body">
                                                     <div class="mb-3 row">
-                                                        <div class="col-sm-3 col-xl-4">
-                                                            <label class="small mb-1" for="inputID">User ID</label>
-                                                            <input class="form-control bg-primary-soft" name="id" disabled="" id="inputID" type="email" placeholder="Enter your email address" value="${userChoose!=null?userChoose.getUser_id():0}" />
-                                                            <input class="form-control" name="id" hidden="" type="text" placeholder="Enter your email address" value="${userChoose!=null?userChoose.getUser_id():0}" />
-                                                        </div>
-                                                        <div class="col-sm-9 col-xl-8">
-                                                            <label class="small mb-1" for="inputEmailAddress">Email address (*)</label>
-                                                            <input class="form-control ${userChoose==null||(userChoose!=null&&loginUser.getRole_id()>1)?'bg-primary-soft':''}" name="email" ${userChoose!=null?"disabled=''":""} onchange="document.getElementById('emailValue').value = this.value;" id="inputEmailAddress" type="email" placeholder="Enter your email address" value="${userChoose!=null?userChoose.getEmail():''}" />
+                                                        <input class="form-control" name="id" hidden="" type="text" placeholder="Enter your email address" value="${userChoose!=null?userChoose.getUser_id():0}" />
+                                                        <div class="col">
+                                                            <label class="small mb-1" for="inputEmailAddress">Email address<span style="color: red">*</span></label>
+                                                            <input class="form-control ${userChoose==null||(userChoose!=null&&(userChoose.getUser_id()!=loginUser.getUser_id()||loginUser.getRole_id()<2))?'bg-primary-soft':''}" name="email" ${userChoose!=null?"disabled=''":""} onchange="document.getElementById('emailValue').value = this.value;" id="inputEmailAddress" type="email" placeholder="Enter your email address" value="${userChoose!=null?userChoose.getEmail():''}" />
                                                             <input class="form-control" name="email" hidden="" type="email" placeholder="Enter your email address" id="emailValue" value="${userChoose!=null?userChoose.getEmail():''}" />
                                                         </div>
                                                     </div>
                                                     <div class="mb-3 row">
                                                         <div class="col-sm-3 col-xl-4 d-flex flex-column justify-content-between align-items-start">
-                                                            <label class="small mb-1" for="gender">Gender (*)</label>
+                                                            <label class="small mb-1" for="gender">Gender<span style="color: red">*</span></label>
                                                             <div id="gender">
                                                                 <div class="form-check form-check-inline">
-                                                                    <input ${userChoose!=null?(userChoose.getUser_id()!=loginUser.getUser_id()&&loginUser.getRole_id()<2?"":"disabled=''"):''} class="form-check-input" type="radio" name="gender" ${userChoose!=null&&userChoose.isGender()?'checked=""':''} id="male" value="1">
+                                                                    <input ${userChoose==null||(userChoose!=null&&(userChoose.getUser_id()!=loginUser.getUser_id()||loginUser.getRole_id()<2))?'disabled=""':''} class="form-check-input" type="radio" name="gender" ${userChoose!=null&&userChoose.isGender()?'checked=""':''} id="male" value="1">
                                                                     <label class="form-check-label" for="male">Male</label>
                                                                 </div>
                                                                 <div class="form-check form-check-inline">
-                                                                    <input ${userChoose!=null?(userChoose.getUser_id()!=loginUser.getUser_id()&&loginUser.getRole_id()<2?"":"disabled=''"):''} class="form-check-input" type="radio" name="gender" ${userChoose!=null&&!userChoose.isGender()?'checked=""':''} id="female" value="0">
+                                                                    <input ${userChoose==null||(userChoose!=null&&(userChoose.getUser_id()!=loginUser.getUser_id()||loginUser.getRole_id()<2))?'disabled=""':''} class="form-check-input" type="radio" name="gender" ${userChoose!=null&&!userChoose.isGender()?'checked=""':''} id="female" value="0">
                                                                     <label class="form-check-label" for="female">Female</label>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div class="col-sm-9 col-xl-8">
-                                                            <label class="small mb-1" for="inputFullName">Full Name (*)</label>
-                                                            <input class="form-control ${userChoose==null||(userChoose!=null&&loginUser.getRole_id()>1)?'bg-primary-soft':''}" ${userChoose!=null?(userChoose.getUser_id()!=loginUser.getUser_id()&&loginUser.getRole_id()<2?"":"disabled=''"):''} required="" name="fullname" id="inputFullName" type="text" placeholder="Enter your full name" value="${userChoose!=null?userChoose.getFull_name():''}"/>
+                                                            <label class="small mb-1" for="inputFullName">Full Name<span style="color: red">*</span></label>
+                                                            <input class="form-control ${userChoose==null||(userChoose!=null&&(userChoose.getUser_id()!=loginUser.getUser_id()||loginUser.getRole_id()<2))?'bg-primary-soft':''}" ${userChoose==null||(userChoose!=null&&(userChoose.getUser_id()!=loginUser.getUser_id()||loginUser.getRole_id()<2))?'disabled=""':''}" required="" name="fullname" id="inputFullName" type="text" placeholder="Enter your full name" value="${userChoose!=null?userChoose.getFull_name():''}"/>
                                                         </div>
                                                     </div>
                                                     <div class="row gx-3 mb-3">
                                                         <div class="col-sm-3 col-xl-4">
                                                             <label for="role_id" class="form-label">Role</label>
-                                                            <select ${userChoose!=null?(userChoose.getUser_id()!=loginUser.getUser_id()&&loginUser.getRole_id()<2?"":"disabled=''"):''} id="role_id" name="role_id" ${sessionScope.LOGIN_ROLE.getSetting_title().equalsIgnoreCase("admin")&&loginUser.getUser_id()!=userChoose.getUser_id()?"":"disabled=''"} class="form-select form-control ${userChoose==null||(userChoose!=null&&loginUser.getRole_id()>1)?'bg-primary-soft':''}">
+                                                            <select ${userChoose==null||(userChoose!=null&&(userChoose.getUser_id()!=loginUser.getUser_id()||loginUser.getRole_id()<2))?'disabled=""':''}" id="role_id" name="role_id" ${sessionScope.LOGIN_ROLE.getSetting_title().equalsIgnoreCase("admin")&&loginUser.getUser_id()!=userChoose.getUser_id()?"":"disabled=''"} class="form-select form-control ${userChoose==null||(userChoose!=null&&(userChoose.getUser_id()!=loginUser.getUser_id()||loginUser.getRole_id()<2))?'bg-primary-soft':''}">
                                                                 <c:forEach items="${sessionScope.LIST_ROLES_SETTING}" var="role">
                                                                     <c:choose>
                                                                         <c:when test="${userChoose!=null&&role.setting_id==userChoose.role_id}">
@@ -141,26 +137,26 @@
                                                             <input type="text" name="role_id" value="${userChoose!=null?userChoose.role_id:''}" hidden="" id="changeRole">
                                                         </div>
                                                         <div class="col-sm-9 col-xl-8" id="formRollNum">
-                                                            <label for="rollNumber" class="form-label">Roll Number <span class="text-gray-500">(required if user is a student)</span></label>
-                                                            <input ${userChoose!=null?(userChoose.getUser_id()!=loginUser.getUser_id()&&loginUser.getRole_id()<2?"":"disabled=''"):''} class="form-control ${userChoose==null||(userChoose!=null&&loginUser.getRole_id()>1)?'bg-primary-soft':''}" ${userChoose!=null&&userChoose.role_id==4?"":"disabled=''"} placeholder="Roll Number" autofocus="" value="${userChoose!=null?userChoose.getRoll_number():''}" type="text" id="rollNumber" name="rollNumber" maxlength="40">
+                                                            <label for="rollNumber" class="form-label">Roll Number <span class="text-gray-500">(required if user is a student)</span><span style="color: red">*</span></label>
+                                                            <input ${userChoose==null||(userChoose!=null&&(userChoose.getUser_id()!=loginUser.getUser_id()||loginUser.getRole_id()<2))?'disabled=""':''} class="form-control ${userChoose==null||(userChoose!=null&&(userChoose.getUser_id()!=loginUser.getUser_id()||loginUser.getRole_id()<2))?'bg-primary-soft':''}" ${userChoose!=null&&userChoose.role_id==4?"":"disabled=''"} placeholder="Roll Number" autofocus="" value="${userChoose!=null?userChoose.getRoll_number():''}" type="text" id="rollNumber" name="rollNumber" maxlength="40">
                                                         </div>
                                                     </div>
                                                     <div class="row gx-3 mb-3">
                                                         <div class="col-sm-3 col-xl-4">
                                                             <label class="small mb-1" for="inputPhone">Phone number</label>
-                                                            <input class="form-control ${userChoose==null||(userChoose!=null&&loginUser.getRole_id()>1)?'bg-primary-soft':''}" ${userChoose!=null?(userChoose.getUser_id()!=loginUser.getUser_id()&&loginUser.getRole_id()<2?"":"disabled=''"):''} name="mobile" id="inputPhone" type="tel" placeholder="Enter your phone number" value="${userChoose!=null?userChoose.getMobile():''}" />
+                                                            <input class="form-control ${userChoose==null||(userChoose!=null&&(userChoose.getUser_id()!=loginUser.getUser_id()||loginUser.getRole_id()<2))?'bg-primary-soft':''}" ${userChoose==null||(userChoose!=null&&(userChoose.getUser_id()!=loginUser.getUser_id()||loginUser.getRole_id()<2))?'disabled=""':''}" name="mobile" id="inputPhone" type="tel" placeholder="Enter your phone number" value="${userChoose!=null?userChoose.getMobile():''}" />
                                                         </div>
                                                         <div class="col-sm-3 col-xl-4">
                                                             <label class="small mb-1" for="inputBirthday">Birthday</label>
                                                             <input hidden="" type="text" id="birthday" value="${userChoose.getDate_of_birth()}">
-                                                            <input class="form-control ${userChoose==null||(userChoose!=null&&loginUser.getRole_id()>1)?'bg-primary-soft':''}" ${userChoose!=null?(userChoose.getUser_id()!=loginUser.getUser_id()&&loginUser.getRole_id()<2?"":"disabled=''"):''} id="inputBirthday" type="date" name="date_of_birth" placeholder="Enter your birthday" value="" />
+                                                            <input class="form-control ${userChoose==null||(userChoose!=null&&(userChoose.getUser_id()!=loginUser.getUser_id()||loginUser.getRole_id()<2))?'bg-primary-soft':''}" ${userChoose==null||(userChoose!=null&&(userChoose.getUser_id()!=loginUser.getUser_id()||loginUser.getRole_id()<2))?'disabled=""':''}" id="inputBirthday" type="date" name="date_of_birth" placeholder="Enter your birthday" value="" />
                                                         </div>
                                                         <div class="col-sm-6 col-xl-4">
                                                             <label class="small mb-1" for="facebookLink">Facebook</label>
-                                                            <input ${userChoose!=null?(userChoose.getUser_id()!=loginUser.getUser_id()&&loginUser.getRole_id()<2?"":"disabled=''"):''} class="form-control ${userChoose!=null&&loginUser.getUser_id()!=userChoose.getUser_id()?"bg-primary-soft":""}" name="facebook_link" type="url" placeholder="${userChoose!=null&&loginUser.getUser_id()!=userChoose.getUser_id()?'You are not allow to edit this field':'Enter your facebook link'}" ${userChoose!=null&&loginUser.getUser_id()!=userChoose.getUser_id()?"disabled=''":""} value="${userChoose!=null?userChoose.getFacebook_link():''}" />
+                                                            <input ${userChoose==null||(userChoose!=null&&(userChoose.getUser_id()!=loginUser.getUser_id()||loginUser.getRole_id()<2))?'disabled=""':''} class="form-control ${userChoose!=null&&loginUser.getUser_id()!=userChoose.getUser_id()?"bg-primary-soft":""}" name="facebook_link" type="url" placeholder="${userChoose!=null&&loginUser.getUser_id()!=userChoose.getUser_id()?'You are not allow to edit this field':'Enter your facebook link'}" ${userChoose!=null&&loginUser.getUser_id()!=userChoose.getUser_id()?"disabled=''":""} value="${userChoose!=null?userChoose.getFacebook_link():''}" />
                                                         </div>
                                                     </div>
-                                                    <c:if test="${userChoose!=null?(userChoose.getUser_id()!=loginUser.getUser_id()&&loginUser.getRole_id()<2):loginUser.getRole_id()<2}">
+                                                    <c:if test="${userChoose!=null||(userChoose!=null&&(userChoose.getUser_id()!=loginUser.getUser_id()||loginUser.getRole_id()<2))}">
                                                         <button class="btn btn-primary" name="service" value="update" type="submit">Save changes</button>
                                                         <button class="btn btn-light" type="reset">Cancel</button>
                                                     </c:if>
@@ -174,7 +170,7 @@
                                                 <form action="profile" method="POST">
                                                     <input class="form-control" name="email" hidden="" type="email" placeholder="Enter your email address" value="${userChoose!=null?userChoose.getEmail():''}" />
                                                     <div class="wrap-form-field col">
-                                                        <label for="passwordCurrent" class="form-label">Current Password</label>
+                                                        <label for="passwordCurrent" class="form-label">Current Password<span style="color: red">*</span></label>
                                                         <div class="form-group group-width-icon">
                                                             <i class="fa-solid fa-lock"></i>
                                                             <input type="password" id="passwordCurrent" class="form-control" placeholder="Password" autocomplete="off" data-val="true" data-val-required="Password is required" required="" id="passwordCurrent" maxlength="40" name="passwordCurrent">
@@ -185,7 +181,7 @@
                                                         <span class="text-danger field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span>
                                                     </div>
                                                     <div class="wrap-form-field col">
-                                                        <label for="password" class="form-label">Password</label>
+                                                        <label for="password" class="form-label">Password<span style="color: red">*</span></label>
                                                         <div class="form-group group-width-icon">
                                                             <i class="fa-solid fa-lock"></i>
                                                             <input type="password" id="password" class="form-control" placeholder="Password" autocomplete="off" data-val="true" data-val-required="Password is required" required="" id="password" maxlength="40" name="password">
@@ -196,7 +192,7 @@
                                                         <span class="text-danger field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span>
                                                     </div>
                                                     <div class="wrap-form-field col">
-                                                        <label for="passwordCf" class="form-label">Confirm password</label>
+                                                        <label for="passwordCf" class="form-label">Confirm password<span style="color: red">*</span></label>
                                                         <div class="form-group group-width-icon">
                                                             <i class="fa-solid fa-lock"></i>
                                                             <input type="password" id="passwordCf" class="form-control" placeholder="Password" autocomplete="off" data-val="true" data-val-required="Password is required" required="" maxlength="40" name="passwordCf">

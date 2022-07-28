@@ -61,7 +61,7 @@
                             <div class="card card-waves p-4 mb-4 mt-5">
                                 <div class="row">
                                     <div class="mb-3 col-12">
-                                        <label  class="form-label" for="class_id">Class Code</label>
+                                        <label  class="form-label" for="class_id">Class Code<span style="color: red">*</span></label>
                                         <c:choose>
                                             <c:when test="${milestoneChoose != null}" >
                                                 <input type="text" required=""  class="form-control border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}" value="${milestoneChoose.getClassroom().getClass_code()}" disabled="">
@@ -88,7 +88,7 @@
                                     </div>
                                     <c:if test="${(requestScope.LIST_ITERATION!=null&&requestScope.LIST_ITERATION.size()>0)||milestoneChoose!=null}">
                                         <div class="mb-3 col-12">
-                                            <label  class="form-label" for="iteration_id">Iteration Name</label>
+                                            <label  class="form-label" for="iteration_id">Iteration Name<span style="color: red">*</span></label>
                                             <c:choose>
                                                 <c:when test="${milestoneChoose != null && milestoneChoose.getIteration_id()!=0}" >
                                                     <input type="text" required=""  class="form-control border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}" value="${milestoneChoose.getIteration().getIteration_name()}" disabled="">

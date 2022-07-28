@@ -5,6 +5,11 @@
  */
 package Model.Entity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 /**
  *
  * @author Admin
@@ -12,25 +17,13 @@ package Model.Entity;
 public class Issue {
     private int issue_id,assignee_id;
     private String issue_title,description,gitlab_id,gitlab_url,created_at,due_date;
-    private int team_id,milestone_id,function_id,status,label;
+    private int team_id,milestone_id,function_id,status;
+    private Integer label;
 
     public Issue() {
     }
-
-    public Issue(int assignee_id, String issue_title, String description, String gitlab_id, String gitlab_url, String due_date, int team_id, int milestone_id, int function_id, int status) {
-        this.assignee_id = assignee_id;
-        this.issue_title = issue_title;
-        this.description = description;
-        this.gitlab_id = gitlab_id;
-        this.gitlab_url = gitlab_url;
-        this.due_date = due_date;
-        this.team_id = team_id;
-        this.milestone_id = milestone_id;
-        this.function_id = function_id;
-        this.status = status;
-    }
     
-    public Issue(int assignee_id, String issue_title, String description, String gitlab_id, String gitlab_url, String due_date, int team_id, int milestone_id, int function_id, int status, int label) {
+    public Issue(int assignee_id, String issue_title, String description, String gitlab_id, String gitlab_url, String due_date, int team_id, int milestone_id, int function_id, int status, Integer label) {
         this.assignee_id = assignee_id;
         this.issue_title = issue_title;
         this.description = description;
@@ -44,22 +37,7 @@ public class Issue {
         this.label = label;
     }
     
-    public Issue(int issue_id, int assignee_id, String issue_title, String description, String gitlab_id, String gitlab_url, String created_at, String due_date, int team_id, int milestone_id, int function_id, int status) {
-        this.issue_id = issue_id;
-        this.assignee_id = assignee_id;
-        this.issue_title = issue_title;
-        this.description = description;
-        this.gitlab_id = gitlab_id;
-        this.gitlab_url = gitlab_url;
-        this.created_at = created_at;
-        this.due_date = due_date;
-        this.team_id = team_id;
-        this.milestone_id = milestone_id;
-        this.function_id = function_id;
-        this.status = status;
-    }
-    
-    public Issue(int issue_id, int assignee_id, String issue_title, String description, String gitlab_id, String gitlab_url, String created_at, String due_date, int team_id, int milestone_id, int function_id, int status, int label) {
+    public Issue(int issue_id, int assignee_id, String issue_title, String description, String gitlab_id, String gitlab_url, String created_at, String due_date, int team_id, int milestone_id, int function_id, int status, Integer label) {
         this.issue_id = issue_id;
         this.assignee_id = assignee_id;
         this.issue_title = issue_title;
@@ -126,9 +104,27 @@ public class Issue {
     public void setGitlab_url(String gitlab_url) {
         this.gitlab_url = gitlab_url;
     }
+    
+    public Date getDate(String input) throws ParseException {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH).parse(input);
+    }
+    
+    public boolean after() throws ParseException{
+        if (created_at==null) {
+            return false;
+        }
+        if (due_date==null) {
+            return true;
+        }
+        return new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(due_date).after(new Date());
+    }
 
     public String getCreated_at() {
         return created_at;
+    }
+    
+    public String getCreatedAt_format() throws ParseException {
+        return created_at == null ? null : new SimpleDateFormat("MMM dd, yyy", Locale.ENGLISH).format(new SimpleDateFormat("yyyy-MM-dd").parse(created_at.split(" ")[0]));
     }
 
     public void setCreated_at(String created_at) {
@@ -137,6 +133,10 @@ public class Issue {
 
     public String getDue_date() {
         return due_date;
+    }
+    
+    public String getDueDate_format() throws ParseException {
+        return due_date == null ? null : new SimpleDateFormat("MMM dd, yyy", Locale.ENGLISH).format(new SimpleDateFormat("yyyy-MM-dd").parse(due_date.split(" ")[0]));
     }
 
     public void setDue_date(String due_date) {
@@ -191,7 +191,7 @@ public class Issue {
         return DAO.ClassSettingDAO.getInstance().getClassSetting(status);
     }
 
-    public int getLabel() {
+    public Integer getLabel() {
         return label;
     }
 
@@ -199,5 +199,7 @@ public class Issue {
         this.label = label;
     }
     
-    
+    public ClassSetting getIssueLabel() {
+        return DAO.ClassSettingDAO.getInstance().getClassSetting(label);
+    }
 }

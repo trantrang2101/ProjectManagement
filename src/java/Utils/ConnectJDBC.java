@@ -43,7 +43,7 @@ public class ConnectJDBC {
 
     public int countRows(String table, String search, String addCondition) {
         int te = 0;
-        String sql = "CALL `studentmanagement`.countRows('\\'%" + search + "%\\'','studentmanagement','" + table + "','" + addCondition + "')";
+        String sql = "CALL countRows('\\'%" + search + "%\\'','" + table + "','" + addCondition + "')";
         ResultSet rs1 = getData(sql);
         try {
             while (rs1.next()) {

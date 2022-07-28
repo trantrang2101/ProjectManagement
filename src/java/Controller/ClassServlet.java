@@ -94,7 +94,7 @@ public class ClassServlet extends HttpServlet {
                     request.setAttribute("SORT_STATUS", statusSort);
                     request.setAttribute("LIST_TERM", DAO.SettingDAO.getInstance().getList(2, true, "", 0, Integer.MAX_VALUE, "setting_id", true));
                     request.setAttribute("CLASS_SIZE", (int) Math.ceil(DAO.ClassDAO.getInstance().countRows("class", search, (trainer != null ? " and trainer_id=" + trainer : "").concat(type != null ? " and subject_id=" + type : "")
-                            + (login.getRole_id() == 1 ? "" : " and status=1".concat(login.getRole_id() == 3 ? " and trainer_id=" + login.getUser_id() : login.getRole_id() == 4 ? " and class_id in (select class_id from `studentmanagement`.`class_user` where user_id=" + login.getUser_id() + ")" : " and subject_id in (select subject_id from `studentmanagement`.`subject` where author_id=" + login.getUser_id() + ")"))) * 1.0 / 10));
+                            + (login.getRole_id() == 1 ? "" : " and status=1".concat(login.getRole_id() == 3 ? " and trainer_id=" + login.getUser_id() : login.getRole_id() == 4 ? " and class_id in (select class_id from `class_user` where user_id=" + login.getUser_id() + ")" : " and subject_id in (select subject_id from `subject` where author_id=" + login.getUser_id() + ")"))) * 1.0 / 10));
                     request.setAttribute("LIST_CLASS", DAO.ClassDAO.getInstance().getList(search, (thisPage - 1) * 10, 24, login, type, trainer, statusFilter, sort, statusSort));
                     dispathForward(request, response, "class/list.jsp");
                     break;

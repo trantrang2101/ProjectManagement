@@ -115,9 +115,9 @@ public class TrackingServlet extends HttpServlet {
                     request.setAttribute("SORT_TRACKING", sort);
                     request.setAttribute("SORT_STATUS", statusSort);
                     request.setAttribute("TRACKING_SIZE", (int) Math.ceil(DAO.ClassDAO.getInstance().countRows("tracking", "", (assignee != null ? " and assignee_id=" + assignee : "")
-                            + (team != null ? " and function_id in (select function_id from studentmanagement.function where team_id=" + team + ")" : "") + (statusChoose != null ? " and status = " + statusChoose : "")
-                            + (login.getRole_id() == 1 ? "" : login.getRole_id() == 2 ? " and milestone_id in (select milestone_id from `studentmanagement`.`milestone`,`studentmanagement`.`class` where milestone.class_id = class.class_id and trainer_id=" + login.getUser_id() + ")" : (login.getRole_id() == 4 ? " and function_id in (select function_id from `studentmanagement`.`function`,`studentmanagement`.`class_user` where class_user.team_id=function.team_id and user_id=" + login.getUser_id() + ")" : " and milestone_id in (select milestone_id from `studentmanagement`.`milestone`,`studentmanagement`.`class`,`studentmanagement`.`subject` where class.class_id=milestone.class_id and class.subject_id=subject.subject_id and author_id=" + login.getUser_id() + ")"))
-                            + (feature != null ? " and function_id in (select function_id from `studentmanagement`.`function` where feature_id=" + feature + ")" : "")) * 1.0 / 10));
+                            + (team != null ? " and function_id in (select function_id from `function` where team_id=" + team + ")" : "") + (statusChoose != null ? " and status = " + statusChoose : "")
+                            + (login.getRole_id() == 1 ? "" : login.getRole_id() == 2 ? " and milestone_id in (select milestone_id from `milestone`,`class` where milestone.class_id = class.class_id and trainer_id=" + login.getUser_id() + ")" : (login.getRole_id() == 4 ? " and function_id in (select function_id from `function`,`class_user` where class_user.team_id=function.team_id and user_id=" + login.getUser_id() + ")" : " and milestone_id in (select milestone_id from `milestone`,`class`,`subject` where class.class_id=milestone.class_id and class.subject_id=subject.subject_id and author_id=" + login.getUser_id() + ")"))
+                            + (feature != null ? " and function_id in (select function_id from `function` where feature_id=" + feature + ")" : "")) * 1.0 / 10));
                     request.setAttribute("LIST_TRACKING", DAO.TrackingDAO.getInstance().getList(team, statusChoose, assignee, null, feature, (thisPage - 1) * 10, 10, login, sort, statusSort, null));
                     dispathForward(request, response, "tracking/list.jsp");
                     break;
@@ -141,7 +141,7 @@ public class TrackingServlet extends HttpServlet {
                         session.removeAttribute("TRACKING_CHANGE_STATUS");
                         session.removeAttribute("STATUS_CHANGE");
                     }
-                    url=("tracking?service=list&team=" + team);
+                    url = ("tracking?service=list&team=" + team);
                     break;
                 case "update":
                     if (request.getParameter("submitForm") == null) {
@@ -157,38 +157,48 @@ public class TrackingServlet extends HttpServlet {
                         } else {
                             error.add("Update tracking failed!");
                         }
-                        url=("tracking?service=list&class=" + classID);
+                        url = ("tracking?service=list&class=" + classID);
                     }
                     break;
                 case "add":
-                    listFeature = DAO.FeatureDAO.getInstance().getList(team);
-                    request.setAttribute("LIST_FEATURE", listFeature);
-                    String submit = request.getParameter("submitForm");
-                    List<Milestone> listMilestone = DAO.MilestoneDAO.getInstance().getList(classroom.getClass_id(), null, 1, login, "", 0, Integer.MAX_VALUE, "milestone_id", true);
-                    if (listFeature != null&& !listFeature.isEmpty()) {
-                        feature = request.getParameter("feature") == null || request.getParameter("feature").isEmpty() ? listFeature.get(0).getFeature_id() : Integer.parseInt(request.getParameter("feature"));
-                        List<Function> listFunction = DAO.FunctionDAO.getInstance().getList(feature);
-                        request.setAttribute("FEATURE_CHOOSE", DAO.FeatureDAO.getInstance().getFeature(feature));
-                        request.setAttribute("LIST_MILESTONE", listMilestone);
-                        request.setAttribute("LIST_FUNCTION", listFunction);
-                    }
-                    if (submit == null) {
-                        dispathForward(request, response, "tracking/detail.jsp");
-                    } else {
-                        int function = Integer.parseInt(request.getParameter("function"));
-                        int milestone = Integer.parseInt(request.getParameter("milestone"));
-                        int status = Integer.parseInt(request.getParameter("status"));
-                        String note = request.getParameter("note");
-                        if (DAO.TrackingDAO.getInstance().checkTracking(milestone, function) != null) {
-                            error.add("This tracking has existed");
+                    if (DAO.TeamDAO.getInstance().getTeam(team).getLeader().getUser_id() == login.getUser_id()) {
+                        String submit = request.getParameter("submitForm");
+                        listFeature = DAO.FeatureDAO.getInstance().getList(team);
+                        if (listFeature.isEmpty()) {
+                            error.add("There are no function or feature for you to do!");
+                            url = ("tracking?service=list&team=" + team);
                         } else {
-                            if (DAO.TrackingDAO.getInstance().addTracking(new Tracking(0, milestone, function, login.getUser_id(), assignee, note, status))) {
-                                success = "Add tracking successfully!";
+                            request.setAttribute("LIST_FEATURE", listFeature);
+                            List<Milestone> listMilestone = DAO.MilestoneDAO.getInstance().getList(classroom.getClass_id(), null, 1, login, "", 0, Integer.MAX_VALUE, "milestone_id", true);
+                            feature = request.getParameter("feature") == null || request.getParameter("feature").isEmpty() ? listFeature.get(0).getFeature_id() : Integer.parseInt(request.getParameter("feature"));
+                            List<Function> listFunction = DAO.FunctionDAO.getInstance().getList(feature);
+                            request.setAttribute("FEATURE_CHOOSE", DAO.FeatureDAO.getInstance().getFeature(feature));
+                            if (submit == null) {
+                                request.setAttribute("LIST_MILESTONE", listMilestone);
+                                if (feature != null && !listFunction.isEmpty()) {
+                                    request.setAttribute("LIST_FUNCTION", listFunction);
+                                }
+                                dispathForward(request, response, "tracking/detail.jsp");
                             } else {
-                                error.add("Add tracking failed!");
+                                int function = Integer.parseInt(request.getParameter("function"));
+                                int milestone = Integer.parseInt(request.getParameter("milestone"));
+                                int status = Integer.parseInt(request.getParameter("status"));
+                                String note = request.getParameter("note");
+                                if (DAO.TrackingDAO.getInstance().checkTracking(milestone, function) != null) {
+                                    error.add("This tracking has existed");
+                                } else {
+                                    if (DAO.TrackingDAO.getInstance().addTracking(new Tracking(0, milestone, function, login.getUser_id(), assignee, note, status))) {
+                                        success = "Add tracking successfully!";
+                                    } else {
+                                        error.add("Add tracking failed!");
+                                    }
+                                }
+                                url = ("tracking?service=list&team=" + team);
                             }
                         }
-                        url=("tracking?service=list&class=" + classID);
+                    } else {
+                        error.add("You must be a leader to add tracking!");
+                        url = ("tracking?service=list&team=" + team);
                     }
                     break;
             }

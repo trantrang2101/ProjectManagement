@@ -34,7 +34,7 @@ public class TrackingUpdateServlet extends HttpServlet {
      */
     private static final StringWriter errors = new StringWriter();
     private static final Logger logger = Logger.getLogger(TrackingUpdateServlet.class);
-    
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -133,17 +133,25 @@ public class TrackingUpdateServlet extends HttpServlet {
                     request.setAttribute("SORT_TRACKING", sort);
                     request.setAttribute("SORT_STATUS", statusSort);
                     request.setAttribute("TRACKING_UPDATE_SIZE", (int) Math.ceil(DAO.ClassDAO.getInstance().countRows("update_tracking", "", (milestone != null ? " and milestone_id=" + milestone : "") + (tracking != null ? " and tracking_id=" + tracking : "")
-                            + (team != null ? " and tracking_id in (select tracking_id from studentmanagement.function, studentmanagement.tracking where function.function_id=tracking.function_id and team_id=" + team + ")" : "") + (feature != null ? " and tracking_id in (select tracking_id from `studentmanagement`.`tracking`,`studentmanagement`.`function` where function.function_id=tracking.function_id and feature_id=" + feature + ")" : "")
-                            + (login.getRole_id() == 1 ? "" : login.getRole_id() == 2 ? " and milestone_id in (select milestone_id from `studentmanagement`.`milestone`,`studentmanagement`.`class` where milestone.class_id = class.class_id and trainer_id=" + login.getUser_id() + ")" : (login.getRole_id() == 4 ? " and milestone_id in (select milestone_id from `studentmanagement`.`milestone`,`studentmanagement`.`class_user` where class_user.class_id=milestone.class_id and user_id=" + login.getUser_id() + ")" : " and milestone_id in (select milestone_id from `studentmanagement`.`milestone`,`studentmanagement`.`class`,`studentmanagement`.`subject` where class.class_id=milestone.class_id and class.subject_id=subject.subject_id and author_id=" + login.getUser_id() + ")"))) * 1.0 / 10));
+                            + (team != null ? " and tracking_id in (select tracking_id from `function`, tracking where function.function_id=tracking.function_id and team_id=" + team + ")" : "") + (feature != null ? " and tracking_id in (select tracking_id from `tracking`,`function` where function.function_id=tracking.function_id and feature_id=" + feature + ")" : "")
+                            + (login.getRole_id() == 1 ? "" : login.getRole_id() == 2 ? " and milestone_id in (select milestone_id from `milestone`,`class` where milestone.class_id = class.class_id and trainer_id=" + login.getUser_id() + ")" : (login.getRole_id() == 4 ? " and milestone_id in (select milestone_id from `milestone`,`class_user` where class_user.class_id=milestone.class_id and user_id=" + login.getUser_id() + ")" : " and milestone_id in (select milestone_id from `milestone`,`class`,`subject` where class.class_id=milestone.class_id and class.subject_id=subject.subject_id and author_id=" + login.getUser_id() + ")"))) * 1.0 / 10));
                     request.setAttribute("LIST_TRACKING_UPDATE", DAO.UpdateTrackingDAO.getInstance().getList(team, milestone, tracking, feature, (thisPage - 1) * 10, 10, login, sort, statusSort));
                     dispathForward(request, response, "tracking/updateList.jsp");
+                    break;
+                case "delete":
+                    if (DAO.UpdateTrackingDAO.getInstance().deleteTracking(id)) {
+                        success = "Delete update tracking successfully!";
+                    } else {
+                        error.add("Failed to Delete update tracking!");
+                    }
+                    url = ("updateTracking?tracking=" + tracking);
                     break;
                 case "update":
                     if (request.getParameter("submitForm") == null) {
                         UpdateTracking update = DAO.UpdateTrackingDAO.getInstance().getUpdateTracking(id);
                         request.setAttribute("TRACKING_CHOOSE", update.getTracking());
                         request.setAttribute("TRACKING_UPDATE_CHOOSE", update);
-                        dispathForward(request, response, "tracking/updateDetail.jsp");
+                        dispathForward(request, response, "tracking/updateList.jsp");
                     } else {
                         String note = request.getParameter("note");
                         if (track.getAssignee_id() == login.getUser_id()) {
@@ -162,11 +170,11 @@ public class TrackingUpdateServlet extends HttpServlet {
                 case "add":
                     listFeature = DAO.FeatureDAO.getInstance().getListNot(team);
                     request.setAttribute("LIST_FEATURE", listFeature);
-                    listTracking = DAO.TrackingDAO.getInstance().getList(team, null,  login.getUser_id(),null, feature, 0, Integer.MAX_VALUE, login, "tracking_id", true, true);
+                    listTracking = DAO.TrackingDAO.getInstance().getList(team, null, login.getUser_id(), null, feature, 0, Integer.MAX_VALUE, login, "tracking_id", true, true);
                     request.setAttribute("LIST_TRACKING", listTracking);
                     String submit = request.getParameter("submitForm");
                     if (submit == null) {
-                        dispathForward(request, response, "tracking/updateDetail.jsp");
+                        dispathForward(request, response, "tracking/updateList.jsp");
                     } else {
                         String note = request.getParameter("note");
                         if (track.getAssignee_id() == login.getUser_id()) {
@@ -202,7 +210,7 @@ public class TrackingUpdateServlet extends HttpServlet {
             logger.error(errors.toString());
         }
     }
-    
+
     public void dispathInclude(HttpServletRequest request, HttpServletResponse response, String page) {
         RequestDispatcher dispath = request.getRequestDispatcher(page);
         try {
@@ -215,7 +223,7 @@ public class TrackingUpdateServlet extends HttpServlet {
             logger.error(errors.toString());
         }
     }
-    
+
     public void dispathForward(HttpServletRequest request, HttpServletResponse response, String page) {
         RequestDispatcher dispath = request.getRequestDispatcher(page);
         try {

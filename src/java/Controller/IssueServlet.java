@@ -27,6 +27,7 @@ import javax.swing.JFileChooser;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.ResultSet;
+import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -126,11 +127,19 @@ public class IssueServlet extends HttpServlet {
                 Milestone milestone_choose = MilestoneDAO.getInstance().getMilestone(milestoneFilter);
                 request.setAttribute("MILESTONE_CHOOSE", milestone_choose);
             }
+            if (id != null) {
+                User assignee = IssueDAO.getInstance().getIssue(id).getUser();
+                request.setAttribute("USER_CHOOSE", assignee);
+            }
             session.setAttribute("CLASS_CHOOSE", classroom);
-            request.setAttribute("LIST_TEAM", DAO.TeamDAO.getInstance().getList(classFilter, login, "", 0, Integer.MAX_VALUE, "team_id", true, null));
-            request.setAttribute("LIST_MILESTONE", DAO.MilestoneDAO.getInstance().getList(classFilter, null, null, login, "", 0, Integer.MAX_VALUE, "milestone_id", true));
-            request.setAttribute("LIST_FUNCTION", DAO.FunctionDAO.getInstance().getList(team, null, login, "", 0, Integer.MAX_VALUE, "function_id", true, null, null, null, null));
-            request.setAttribute("LIST_STATUS", DAO.ClassSettingDAO.getInstance().getListStatus(classFilter, DAO.SettingDAO.getInstance().getSetting("Issue Status").getSetting_id()));
+            request.setAttribute("LIST_USER", UserDAO.getInstance().getList(4, "", "user_id", true, 0, Integer.MAX_VALUE, null));
+            request.setAttribute("LIST_TEAM", TeamDAO.getInstance().getList(classFilter, login, "", 0, Integer.MAX_VALUE, "team_id", true, null));
+            request.setAttribute("LIST_MILESTONE", MilestoneDAO.getInstance().getList(classFilter, null, null, login, "", 0, Integer.MAX_VALUE, "milestone_id", true));
+            request.setAttribute("LIST_FUNCTION", FunctionDAO.getInstance().getList(team, null, login, "", 0, Integer.MAX_VALUE, "function_id", true, null, null, null, null));
+            List<ClassSetting> listStatus = ClassSettingDAO.getInstance().getListStatus(classFilter, DAO.SettingDAO.getInstance().getSetting("Issue Status").getSetting_id());
+            request.setAttribute("LIST_STATUS", listStatus);
+            List<ClassSetting> listLabel = ClassSettingDAO.getInstance().getListStatus(classFilter, DAO.SettingDAO.getInstance().getSetting("Issue Type").getSetting_id());
+            request.setAttribute("LIST_LABEL", listLabel);
             switch (service) {
                 case "list":
                     String search = request.getParameter("search");
@@ -158,14 +167,9 @@ public class IssueServlet extends HttpServlet {
                     request.setAttribute("THIS_PAGE", thisPage);
                     request.setAttribute("SORT_ISSUE", sort);
                     request.setAttribute("SORT_STATUS", statusSort);
-//                    request.setAttribute("ISSUE_SIZE", (int) Math.ceil(IssueDAO.getInstance().countRows("issue", search,
-//                            (statusFilter == null ? "" : " and status = " + statusFilter) + (login == null || login.getRole_id() == 1 ? "" : 
-//                                    (login.getRole_id() == 4 ? " and team_id in (select team_id from `studentmanagement`.`class_login` where login_id = " + login.getUser_id() + ")" :
-//                                            (login.getRole_id() == 3 ? " and team_id in (select team_id from `studentmanagement`.`class_login`,`studentmanagement`.`class` where class_login.class_id=class.class_id and trainer_id=" 
-//                                                    + login.getUser_id() + ")" : " and team_id in (select team_id from `studentmanagement`.`class_login`,`studentmanagement`.`class`,`studentmanagement`.`subject` where subject.subject_id=class.subject_id and class_login.class_id=class.class_id and author_id=" + login.getUser_id() + ")"))) ) * 1.0 / 10));
-                    request.setAttribute("ISSUE_SIZE", (int) Math.ceil(IssueDAO.getInstance().countRows("issue", search, (statusFilter == null ? "" : " and status = " + statusFilter) + (classFilter == null ? "" : " and team_id in (select team_id from studentmanagement.team where class_id=" + classFilter + ")")) * 1.0 / 10));
+                    request.setAttribute("ISSUE_SIZE", (int) Math.ceil(IssueDAO.getInstance().countRows("issue", search, (statusFilter == null ? "" : " and status = " + statusFilter) + (classFilter == null ? "" : " and team_id in (select team_id from team where class_id=" + classFilter + ")")) * 1.0 / 10));
                     request.setAttribute("SEARCH_WORD", search);
-                    request.setAttribute("STATUS_CHOOSE", status == null ? null : DAO.ClassSettingDAO.getInstance().getClassSetting(classFilter, 10, status));
+                    request.setAttribute("STATUS_CHOOSE", status == null ? null : DAO.ClassSettingDAO.getInstance().getClassSetting(status));
                     request.setAttribute("STATUS_VALUE", status);
                     request.setAttribute("LIST_ISSUE", IssueDAO.getInstance().getList(login, search, (thisPage - 1) * 10, 10, sort, statusSort, statusFilter));
                     dispathForward(request, response, "issue/list.jsp");
@@ -181,7 +185,7 @@ public class IssueServlet extends HttpServlet {
                     String assignee_id = request.getParameter("assignee_id");
                     String issue_title = request.getParameter("issue_title");
                     String description = request.getParameter("description");
-                    String gitlab_id = request.getParameter("gitlab_id");
+                    String gitlab_id = request.getParameter("gitlab_id").isEmpty()? null : request.getParameter("gitlab_id");
                     String gitlab_url = request.getParameter("gitlab_url");
                     String created_at = request.getParameter("created_at");
                     String due_date = request.getParameter("due_date");
@@ -189,13 +193,16 @@ public class IssueServlet extends HttpServlet {
                     String milestone_id = request.getParameter("milestone_id");
                     String function_id = request.getParameter("function_id");
                     status = Integer.parseInt(request.getParameter("status"));
+                    int label = Integer.parseInt(request.getParameter("label"));
+//                    status = listStatus.get(Integer.parseInt(request.getParameter("status"))).getSetting_id();
+//                    int label = listLabel.get(Integer.parseInt(request.getParameter("label"))).getSetting_id();
 
                     if (!DAO.IssueDAO.getInstance().updateIssue(
                             new Issue(id, Integer.parseInt(assignee_id), issue_title, description,
                                     gitlab_id, gitlab_url, created_at, due_date,
                                     Integer.parseInt(team_id),
                                     Integer.parseInt(milestone_id),
-                                    Integer.parseInt(function_id), status))) {
+                                    Integer.parseInt(function_id), status, label))) {
                         error.add("Update Issue Fail!");
                         request.setAttribute("ERROR", error);
                     } else {
@@ -216,7 +223,7 @@ public class IssueServlet extends HttpServlet {
                             assignee_id = request.getParameter("assignee_id");
                             issue_title = request.getParameter("issue_title");
                             description = request.getParameter("description");
-                            gitlab_id = request.getParameter("gitlab_id");
+                            gitlab_id = request.getParameter("gitlab_id").isEmpty()? null : request.getParameter("gitlab_id");
                             gitlab_url = request.getParameter("gitlab_url");
                             created_at = request.getParameter("created_at");
                             due_date = request.getParameter("due_date");
@@ -224,12 +231,13 @@ public class IssueServlet extends HttpServlet {
                             milestone_id = request.getParameter("milestone_id");
                             function_id = request.getParameter("function_id");
                             status = Integer.parseInt(request.getParameter("status"));
+                            label = Integer.parseInt(request.getParameter("label"));
                             Issue i1 = new Issue(
                                     0, Integer.parseInt(assignee_id), issue_title, description,
                                     gitlab_id, gitlab_url, created_at, due_date,
                                     Integer.parseInt(team_id),
                                     Integer.parseInt(milestone_id),
-                                    Integer.parseInt(function_id), status);
+                                    Integer.parseInt(function_id), status, label);
                             if (IssueDAO.getInstance().checkAddIssue(issue_title, Integer.parseInt(assignee_id), status) > 0) {
                                 error.add("This issue has existed!");
                             } else {
@@ -279,7 +287,7 @@ public class IssueServlet extends HttpServlet {
                     } else {
                         error.add("Team's Issue is empty! Cannot export");
                     }
-                    url=("issue?service=list&team=" + team);
+                    url = ("issue?service=list&team=" + team);
                     break;
                 case "importExcel":
                     Part filePart = request.getPart("excel");
@@ -304,7 +312,10 @@ public class IssueServlet extends HttpServlet {
                             }
                             for (int i = 1; i < rowNo; i++) {
                                 try {
-                                    Row row = sheet.getRow(i); // returns the logical row // returns the logical row
+                                    Row row = sheet.getRow(i); // returns the logical row
+                                    if (isRowEmpty(row)) {
+                                        break;
+                                    }
 //                                int id = Integer.parseInt(row.getCell(1).getStringCellValue());
                                     row.getCell(columnTitle).setCellType(Cell.CELL_TYPE_STRING);
                                     String title = row.getCell(columnTitle).getStringCellValue();
@@ -316,10 +327,10 @@ public class IssueServlet extends HttpServlet {
                                     String type = row.getCell(columnType).getStringCellValue();
                                     int milestoneId = DAO.MilestoneDAO.getInstance().checkTitle(milestone);
                                     if (milestoneId < 0) {
-                                        error.add("Milestone is not existed!");
+                                        error.add("This milestone " + milestone + " is not existed!");
                                         continue;
                                     }
-                                    if (date != null && date.isEmpty()) {
+                                    if (date != null && !date.isEmpty()) {
                                         Milestone mile = DAO.MilestoneDAO.getInstance().getMilestone(milestoneId);
                                         Date dueDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH).parse(date);
                                         if (dueDate.after(mile.getDate(mile.getTo_date()))) {
@@ -327,42 +338,40 @@ public class IssueServlet extends HttpServlet {
                                             continue;
                                         }
                                     } else {
-                                        due_date = null;
+                                        date = null;
                                     }
                                     ClassUser cu = DAO.ClassUserDAO.getInstance().checkClassUser(classroom.getClass_code(), assignee);
                                     if (cu == null) {
-                                        error.add("This " + assignee + " not existed in this class!");
+                                        error.add("This assignee has email" + assignee + " not existed in this class!");
                                         continue;
                                     }
-                                    
-//                                    int milestoneID = MilestoneDAO.getInstance().checkAddMilestone(milestoneFilter, milestone);
-//                                    if (milestoneID == -1) {
-//                                        milestoneID = MilestoneDAO.getInstance().addMilestone(new Milestone(milestone, classFilter, new java.util.Date(), null, 1));
-//                                    }
-//                                    String function = row.getCell(8).getStringCellValue().trim();
-//                                    int functionID = FunctionDAO.getInstance().checkAddFunction(String.valueOf(team), 0, function);
-//                                    String issueTitle = row.getCell(0).getStringCellValue();
-//                                    if (IssueDAO.getInstance().checkAddIssue(issueTitle, team, milestoneID) < 0) {
-//                                        description = row.getCell(1).getStringCellValue();
-//                                        row.getCell(2).setCellType(CellType.STRING);
-//                                        created_at = row.getCell(2).getStringCellValue();
-//                                        row.getCell(3).setCellType(CellType.STRING);
-//                                        due_date = row.getCell(3).getStringCellValue();
-//                                        gitlab_url = row.getCell(4).getStringCellValue();
-//                                        Issue i1 = new Issue(
-//                                                0, login.getUser_id(), issueTitle, description,
-//                                                "", gitlab_url, created_at, due_date,
-//                                                team, milestoneID, functionID, status);
-//                                        int addid = IssueDAO.getInstance().addIssue(i1);
-//                                        if (addid < 0) {
-//                                            error.add("Add Issue Fail!");
-//                                        } else {
-//                                            success = "Add successfully!";
-//                                        }
-//                                    } else {
-//                                        error.add("Issue " + issueTitle + " existed!");
-//                                    }
-
+                                    int functionId = DAO.FunctionDAO.getInstance().checkAddFunction(String.valueOf(team), null, function);
+                                    if (functionId < 0) {
+                                        error.add("This function " + function + " not existed in this team! Please add before import issue!");
+                                        continue;
+                                    }
+                                    if (IssueDAO.getInstance().checkAddIssue(title, team, milestoneId) > 0) {
+                                        error.add("This issue " + title + " has existed!");
+                                        continue;
+                                    }
+                                    List<String> labels = listLabel.stream().map(ClassSetting::getSetting_title).collect(Collectors.toList());
+                                    int index = -1;
+                                    for (int j = 0; j < labels.size(); j++) {
+                                        if (labels.get(j).equalsIgnoreCase(type)) {
+                                            index = j;
+                                            break;
+                                        }
+                                    }
+                                    if (index < 0) {
+                                        error.add("This label " + type + " not existed in this class!");
+                                        continue;
+                                    }
+                                    issue = new Issue(cu.getUser_id(), title, description, null, "", date, team, milestoneId, functionId, listStatus.get(0).getSetting_id(), listLabel.get(index).getSetting_id());
+                                    if (DAO.IssueDAO.getInstance().addIssue(issue) > 0) {
+                                        success = "Add issue successfully!";
+                                    } else {
+                                        error.add("Add issue " + title + " failed!");
+                                    }
                                 } catch (Exception e) {
                                     e.printStackTrace(new PrintWriter(errors));
                                     logger.error(errors.toString());
@@ -371,7 +380,7 @@ public class IssueServlet extends HttpServlet {
                             file.delete();
                         }
                     }
-                    url=("issue?service=list&team=" + team);
+                    url = ("issue?service=list&team=" + team);
                     break;
             }
             if (!error.isEmpty()) {
@@ -508,7 +517,7 @@ public class IssueServlet extends HttpServlet {
 
         cell.setCellStyle(cellStyle);
 
-        cell.setCellValue(issue.getCreated_at());
+        cell.setCellValue(issue.getUser().getEmail());
 
         cell = row.createCell(3);
 
@@ -520,7 +529,7 @@ public class IssueServlet extends HttpServlet {
 
         cell.setCellStyle(cellStyle);
 
-        cell.setCellValue(issue.getGitlab_url());
+        cell.setCellValue(issue.getMilestone().getMilestone_name());
 
         // Create cell formula
         // totalMoney = price * quantity
@@ -531,15 +540,9 @@ public class IssueServlet extends HttpServlet {
 //        String columnQuantity = CellReference.convertNumToColString(COLUMN_INDEX_QUANTITY);
 //        cell.setCellFormula(columnPrice + currentRow + "*" + columnQuantity + currentRow);
         cell = row.createCell(5);
-        cell.setCellValue(issue.getUser().getFull_name());
+        cell.setCellValue(issue.getIssueLabel().getSetting_title());
 
         cell = row.createCell(6);
-        cell.setCellValue(issue.getMilestone().getMilestone_name());
-
-        cell = row.createCell(7);
-        cell.setCellValue(issue.getStatus());
-
-        cell = row.createCell(8);
         cell.setCellValue(issue.getFunction().getFunction_name());
 
     }
@@ -566,6 +569,15 @@ public class IssueServlet extends HttpServlet {
         }
     }
 
+    public static boolean isRowEmpty(Row row) {
+        for (int c = row.getFirstCellNum(); c < row.getLastCellNum(); c++) {
+            Cell cell = row.getCell(c);
+            if (cell != null && cell.getCellType() != Cell.CELL_TYPE_BLANK)
+                return false;
+        }
+        return true;
+    }
+    
     private static File cloneFile(HttpServletRequest httpServletRequest, Part part, String output) throws IOException, ServletException {
         InputStream inputStream;
         FileOutputStream fileOutputStream;

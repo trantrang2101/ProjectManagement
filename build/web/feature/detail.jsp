@@ -50,10 +50,6 @@
                             </div>
                             <div class="card card-waves p-4 mb-4 mt-5">
                                 <div class="row align-items-end">
-                                    <div class="mb-3 col-sm-2 col-lg-4">
-                                        <label for="id" class="form-label">Feature ID</label>
-                                        <input type="text" class="form-control border-0 border-bottom bg-transparent" value="${feature.feature_id}" disabled="">
-                                    </div>
                                     <div class="mb-3 col-sm-5 col-lg-4">
                                         <form action="feature" method="POST">
                                             <label for="subject_id" class="form-label">Class ID</label>
@@ -111,7 +107,7 @@
                                 <div class="row">
                                     <div class="mb-3 col-sm-7 col-lg-8">
                                         <input type="text" name="id" class="form-control" value="${feature.feature_id}" hidden="">
-                                        <label for="title" class="form-label">Feature Name</label>
+                                        <label for="title" class="form-label">Feature Name<span style="color: red">*</span></label>
                                         <input type="text" ${loginUser.getRole_id()>3?"required=''":"disabled=''"} name="title" class="form-control border-0 border-bottom bg-transparent" value="${feature.feature_name}">
                                     </div>
 

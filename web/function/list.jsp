@@ -36,9 +36,14 @@
                                     <c:when test="${loginUser.getRole_id()>3}">
                                         <c:if test="${loginUser.getRole_id()>3}">
                                             <div class="col-12 col-xl-auto mb-3 d-flex justify-content-between">
-                                                <a data-bs-toggle="modal" href="#addFunction" class="btn btn-primary" style="margin-right: 1rem;">
+                                             
+                                                <a href="function?service=add&type=${requestScope.TYPE_CHOOSE.team_id}" class="btn btn-primary " style="margin-right: 1rem;">
                                                     <i class="fa-solid fa-plus"></i>
                                                     Add New Function
+                                                </a>
+                                                <a data-bs-toggle="modal" href="#addFunction" class="btn btn-primary" style="margin-right: 1rem;">
+                                                    <i class="fa-solid fa-plus"></i>
+                                                    Import Function
                                                 </a>
                                                 <c:if test="${requestScope.LIST_FUNCTION.size()>0}">
                                                     <a href="function?service=exportExcel&type=${TYPE_CHOOSE.team_id}" class="btn btn-primary">
@@ -75,9 +80,7 @@
                                                             <label for="inputExcel" class="btn padding-0 icon rounded-circle bg-primary">
                                                                 <i class="text-white fa-solid fa-file-excel center"></i>
                                                             </label>
-                                                            <a href="function?service=add&type=${requestScope.TYPE_CHOOSE.team_id}" class="btn icon rounded-circle bg-primary padding-0">
-                                                                <i class="fa-solid fa-keyboard text-white center"></i>
-                                                            </a>
+
                                                         </div>
                                                         <div>
                                                             <h2>Guide insert Excel</h2>
@@ -175,7 +178,7 @@
                                             </div>
                                         </div>
                                         <!--Complexity Filter-->
-                                        <div class="dropdown" style="margin-right: 10px;">
+<!--                                        <div class="dropdown" style="margin-right: 10px;">
                                             <button class="form-select text-capitalize" id="dropdownMenuButton" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <c:choose>
                                                     <c:when test="${requestScope.COMPLEXITY_CHOOSE!=null}">
@@ -192,9 +195,9 @@
                                                     <a class="dropdown-item text-capitalize" href="function?complexity=${complexity.setting_id}${requestScope.CLASS_CHOOSE!=null?"&class=".concat(requestScope.CLASS_CHOOSE.getClass_id()):""}${requestScope.TYPE_CHOOSE!=null?"&type=".concat(requestScope.TYPE_CHOOSE.getTeam_id()):""}${requestScope.FEATURE_CHOOSE!=null?"&feature=".concat(requestScope.FEATURE_CHOOSE.getFeature_id()):""}${requestScope.STATUS_CHOOSE!=null?"&status=".concat(requestScope.STATUS_VALUE):""}${requestScope.PRIORITY_CHOOSE!=null?"&priority=".concat(requestScope.PRIORITY_CHOOSE):""}${requestScope.OWNER_CHOOSE!=null?"&owner_id=".concat(requestScope.OWNER_CHOOSE.getUser_id()):""}">${complexity.setting_title}</a>
                                                 </c:forEach>
                                             </div>
-                                        </div>
+                                        </div>-->
                                         <!--Priority Filter-->
-                                        <div class="dropdown" style="margin-right: 10px;">
+<!--                                        <div class="dropdown" style="margin-right: 10px;">
                                             <button class="form-select text-capitalize" id="dropdownMenuButton" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <c:choose>
                                                     <c:when test="${requestScope.PRIORITY_CHOOSE!=null}">
@@ -211,13 +214,13 @@
                                                     <a class="dropdown-item text-capitalize" href="function?priority=${priority}${requestScope.COMPLEXITY_CHOOSE!=null?"&complexity=".concat(requestScope.COMPLEXITY_CHOOSE.getSetting_id()):""}${requestScope.CLASS_CHOOSE!=null?"&class=".concat(requestScope.CLASS_CHOOSE.getClass_id()):""}${requestScope.TYPE_CHOOSE!=null?"&type=".concat(requestScope.TYPE_CHOOSE.getTeam_id()):""}${requestScope.FEATURE_CHOOSE!=null?"&feature=".concat(requestScope.FEATURE_CHOOSE.getFeature_id()):""}${requestScope.STATUS_CHOOSE!=null?"&status=".concat(requestScope.STATUS_VALUE):""}${requestScope.OWNER_CHOOSE!=null?"&owner_id=".concat(requestScope.OWNER_CHOOSE.getUser_id()):""}">Priority ${priority}</a>
                                                 </c:forEach>
                                             </div>
-                                        </div>
+                                        </div>-->
                                         <!--Owner Filter-->
                                         <div class="dropdown" style="margin-right: 10px;">
                                             <button class="form-select text-capitalize" id="dropdownMenuButton" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <c:choose>
                                                     <c:when test="${requestScope.OWNER_CHOOSE!=null}">
-                                                       ${OWNER_CHOOSE.getUser().full_name}
+                                                        ${OWNER_CHOOSE.getUser().full_name}
                                                     </c:when>                                
                                                     <c:otherwise>
                                                         All Owner
@@ -234,7 +237,7 @@
                                     </div>
 
                                 </div>
-                                                
+
                                 <div card-header d-flex justify-content-between align-items-center bg-white padding-0 style="margin-right: 10%;">
                                     <form action="function" id="search" method="POST">
                                         <input type="text" name="search" placeholder="Click enter to search..." value="${search}" class="form-control form-search">

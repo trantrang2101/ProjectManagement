@@ -45,11 +45,7 @@
                             <form action="issue" method="POST">
                                 <div class="card card-waves p-4 mb-4 mt-5">
                                     <div class="row align-items-end">
-                                        <div class="mb-3 col-xl-4 col-md-6">
-                                            <label for="id" class="form-label">Issue ID</label>
-                                            <input type="text" class="form-control border-0 border-bottom bg-transparent" value="${issue.issue_id}" disabled="">
-                                            <input type="text" name="id" class="form-control" value="${issue.issue_id}" hidden="">
-                                        </div>
+                                        <input type="text" name="id" class="form-control" value="${issue.issue_id}" hidden="">
                                         <div class="mb-3 col">
                                             <label for="assignee_id" class="form-label border-0 border-bottom">Assignee</label>
                                             <select ${loginUser.getRole_id()<4?"":"disabled=''"} id="assignee_id" name="assignee_id" class="form-control col border-0 border-bottom bg-transparent">
@@ -66,7 +62,7 @@
                                             </select>
                                         </div>
                                         <div class="mb-3 col-xl-4 col-md-6">
-                                            <label for="issue_title" class="form-label">Issue Title</label>
+                                            <label for="issue_title" class="form-label">Issue Title<span style="color: red">*</span></label>
                                             <input type="text" required="" name="issue_title" class="form-control border-0 border-bottom bg-transparent" value="${issue.issue_title}" maxlength="50">
                                         </div>
                                     </div>
@@ -137,83 +133,98 @@
                                                 </div>
                                             </c:otherwise>
                                         </c:choose>
-                                            </div>
-                                            <div class="row align-items-end">
-                                                <div class="mb-3 col-xl-6 col-md-3">
-                                                    <form action="issue" method="POST">
-                                                        <label for="class_code" class="form-label">Class Code</label>
-                                                        <c:choose>
-                                                            <c:when test="${serve=='update'}">
-                                                                <input type="text" class="form-control border-0 border-bottom bg-transparent" value="${issue.getTeam().getClassroom().getSubject().getSubject_code()}_${issue.getTeam().getClassroom().class_code}" disabled="">
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <select id="class_code" name="class" onchange="this.form.submit();" class="form-control col border-0 border-bottom bg-transparent">
-                                                                    <c:forEach items="${sessionScope.LIST_CLASS}" var="class">
-                                                                        <c:choose>
-                                                                            <c:when test="${(issue!=null&&issue.getTeam().class_id==class.class_id)||(requestScope.CLASS_CHOOSE!=null&&requestScope.CLASS_CHOOSE.class_id==class.class_id)}">
-                                                                                <option class="text-capitalize" value="${class.class_id}" selected="">${class.getSubject().getSubject_code()}_${class.class_code}</option>
-                                                                            </c:when>
-                                                                            <c:otherwise>
-                                                                                <option class="text-capitalize" value="${class.class_id}">${class.getSubject().getSubject_code()}_${class.class_code}</option>
-                                                                            </c:otherwise>
-                                                                        </c:choose>
-                                                                    </c:forEach>
-                                                                </select>
+                                    </div>
+                                    <div class="row align-items-end">
+                                        <div class="mb-3 col">
+                                            <form action="issue" method="POST">
+                                                <label for="class_code" class="form-label">Class Code</label>
+                                                <c:choose>
+                                                    <c:when test="${serve=='update'}">
+                                                        <input type="text" class="form-control border-0 border-bottom bg-transparent" value="${issue.getTeam().getClassroom().getSubject().getSubject_code()}_${issue.getTeam().getClassroom().class_code}" disabled="">
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <select id="class_code" name="class" onchange="this.form.submit();" class="form-control col border-0 border-bottom bg-transparent">
+                                                            <c:forEach items="${sessionScope.LIST_CLASS}" var="class">
+                                                                <c:choose>
+                                                                    <c:when test="${(issue!=null&&issue.getTeam().class_id==class.class_id)||(requestScope.CLASS_CHOOSE!=null&&requestScope.CLASS_CHOOSE.class_id==class.class_id)}">
+                                                                        <option class="text-capitalize" value="${class.class_id}" selected="">${class.getSubject().getSubject_code()}_${class.class_code}</option>
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <option class="text-capitalize" value="${class.class_id}">${class.getSubject().getSubject_code()}_${class.class_code}</option>
+                                                                    </c:otherwise>
+                                                                </c:choose>
+                                                            </c:forEach>
+                                                        </select>
 
-                                                            </c:otherwise>
-                                                        </c:choose>
-                                                        <input type="hidden" name="service"value="add">
-                                                        <input type="text" name="submitForm" hidden="" value="class">
-                                                    </form>
-                                                </div>
-                                                <div class="mb-3 col-xl-6 col-md-9">
-                                                    <label class="form-label" for="status">Status</label>
-                                                    <select ${loginUser.getRole_id()<4?"":"disabled=''"} id="status" name="status" class="form-control col border-0 border-bottom bg-transparent">
-                                                        <c:forEach items="${requestScope.LIST_STATUS}" var="status">
-                                                            <c:choose>
-                                                                <c:when test="${(issue!=null&&issue.getStatus()==status.setting_value)}">
-                                                                    <option class="text-capitalize" value="${status.setting_value}" selected="">${status.setting_title}</option>
-                                                                </c:when>
-                                                                <c:otherwise>
-                                                                    <option class="text-capitalize" value="${status.setting_value}">${status.setting_title}</option>
-                                                                </c:otherwise>
-                                                            </c:choose>
-                                                        </c:forEach>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="row align-items-end">
-                                                <div class="mb-3 col-xl-6 col-md-3">
-                                                    <label for="created_at" class="form-label">Created Time</label>
-                                                    <input hidden="" type="text" id="created_at" value="${issue.getCreated_at()}">
-                                                    <input type="date" name="created_at" id="created_at_data" class="form-control border-0 border-bottom bg-transparent" value="${issue.created_at}">
-                                                </div>
-                                                <div class="mb-3 col-xl-6 col-md-9">
-                                                    <label for="due_date" class="form-label">Due Date</label>
-                                                    <input hidden="" type="text" id="update_at" value="${issue.getDue_date()}">
-                                                    <input type="date" name="due_date" id="update_at_data" required="" class="form-control border-0 border-bottom bg-transparent" value="${issue.due_date}">
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="mb-3 col">
-                                                    <label for="gitlab_id" class="form-label">GitLab ID</label>
-                                                    <input type="number" id="gitlab_id" name="gitlab_id" class="form-control border-0 border-bottom bg-transparent" value="${team.gitlab_id}">
-                                                </div>
-                                                <div class="mb-3 col">
-                                                    <label for="gitlab_url" class="form-label">GitLab URL</label>
-                                                    <input type="text" id="gitlab_url" name="gitlab_url" class="form-control border-0 border-bottom bg-transparent" pattern="^(http(s):\/\/)?gitlab\.com[\w\-\._~:\/?#[\]@!\$&'\(\)\*\+,;=.]+$" title="Input must be GitLab URL" maxlength="255" value="${team.gitlab_url}">
-                                                </div>
-                                                <div class="mb-3 form-floating">
-                                                    <textarea class="form-control bg-transparent" disabled='' placeholder="Description" id="description" name="description">${issue!=null?issue.getDescription():''}</textarea>
-                                                    <label for="description">Description</label>
-                                                </div>
-                                            </div>
-                                            <div ${loginUser.getRole_id()<4?"":"hidden=''"} class="ms-auto">
-                                                <input type="text" name="submit" class="form-control" value="add" hidden="">
-                                                <input type="reset" class="btn btn-light" data-bs-dismiss="modal" value="Reset"></input>
-                                                <button type="submit" name="service" value="${issue!=null?'update':'add'}" class="btn btn-primary">Save changes</button>
-                                            </div>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <input type="text" name="submitForm" hidden="" value="class">
+                                            </form>
                                         </div>
+                                        <div class="mb-3 col">
+                                            <label class="form-label" for="label">Label</label>
+                                            <select ${loginUser.getRole_id()<4?"":"disabled=''"} id="label" name="label" class="form-control col border-0 border-bottom bg-transparent">
+                                                <c:forEach items="${requestScope.LIST_LABEL}" var="label">
+                                                    <c:choose>
+                                                        <c:when test="${(issue!=null&&issue.getLabel()==label.setting_id)}">
+                                                            <option class="text-capitalize" value="${label.setting_id}" selected="">${label.setting_title}</option>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <option class="text-capitalize" value="${label.setting_id}">${label.setting_title}</option>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:forEach>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3 col">
+                                            <label class="form-label" for="status">Status</label>
+                                            <select ${loginUser.getRole_id()<4?"":"disabled=''"} id="status" name="status" class="form-control col border-0 border-bottom bg-transparent">
+                                                <c:forEach items="${requestScope.LIST_STATUS}" var="status">
+                                                    <c:choose>
+                                                        <c:when test="${(issue!=null&&issue.getStatus()==status.setting_id)}">
+                                                            <option class="text-capitalize" value="${status.setting_id}" selected="">${status.setting_title}</option>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <option class="text-capitalize" value="${status.setting_id}">${status.setting_title}</option>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:forEach>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-end">
+                                        <div class="mb-3 col-xl-6 col-md-3">
+                                            <label class="form-check-label" for="created_at">Created Time</label>
+                                            <input ${loginUser.getRole_id()<4?"":"disabled=''"} type="date" name="created_at" id="created_at" onchange="document.getElementById('created_at_data').value = this.value;
+                                                    onChangeFromDate()" class="form-control border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}">
+                                            <input ${loginUser.getRole_id()<4?"":"disabled=''"} type="text" id="created_at_data" class="form-control border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}" value="${issue!=null?issue.getCreated_at():''}" hidden="">
+                                        </div>
+                                        <div class="mb-3 col-xl-6 col-md-9">
+                                            <label class="form-check-label" for="due_date">Due Date</label>
+                                            <input ${loginUser.getRole_id()<4?"":"disabled=''"} type="date" name="due_date" id="due_date" onchange="onChangeFromDate()" class="form-control border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}">
+                                            <input ${loginUser.getRole_id()<4?"":"disabled=''"} type="text" id="due_date_data" class="form-control border-0 border-bottom ${loginUser.getRole_id()>3?'bg-primary-soft':'bg-transparent'}" value="${issue!=null?issue.getDue_date():''}" hidden="">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="mb-3 col">
+                                            <label for="gitlab_id" class="form-label">GitLab ID</label>
+                                            <input type="number" id="gitlab_id" name="gitlab_id" class="form-control border-0 border-bottom bg-transparent" value="${issue.gitlab_id}">
+                                        </div>
+                                        <div class="mb-3 col">
+                                            <label for="gitlab_url" class="form-label">GitLab URL</label>
+                                            <input type="text" id="gitlab_url" name="gitlab_url" class="form-control border-0 border-bottom bg-transparent" pattern="^(http(s):\/\/)?gitlab\.com[\w\-\._~:\/?#[\]@!\$&'\(\)\*\+,;=.]+$" title="Input must be GitLab URL" maxlength="255" value="${issue.gitlab_url}">
+                                        </div>
+                                        <div class="mb-3 form-floating">
+                                            <textarea class="form-control bg-transparent" disabled='' placeholder="Description" id="description" name="description">${issue!=null?issue.getDescription():''}</textarea>
+                                            <label for="description">Description</label>
+                                        </div>
+                                    </div>
+                                    <div ${loginUser.getRole_id()<4?"":"hidden=''"} class="ms-auto">
+                                        <input type="text" name="submit" class="form-control" value="add" hidden="">
+                                        <input type="reset" class="btn btn-light" data-bs-dismiss="modal" value="Reset"></input>
+                                        <button type="submit" name="service" value="${issue==null?'add':'update'}" class="btn btn-primary">Save changes</button>
+                                    </div>
+                                </div>
                             </form>
                         </div>
                     </main>
@@ -222,20 +233,32 @@
             </div>
         </div>
         <script>
-            var bir = document.querySelector('#created_at_data');
-            if (bir != null && bir.value != '') {
-                var day = bir.value.split(' ')[0].split('-');
-                var time = bir.value.split(' ')[1].split(':');
-                document.querySelector('#created_at').value = moment(new Date(day[0], day[1] - 1, day[2])).format('YYYY-MM-DD');
-                document.querySelector('#created_at').max = new Date().toISOString().split("T")[0];
+            var due_date_data = document.querySelector('#due_date_data');
+            var created_at_data = document.querySelector('#created_at_data');
+            var dayFrom, dayTo;
+            function onChangeFromDate() {
+                if (created_at_data != null && created_at_data.value != '') {
+                    dayFrom = created_at_data.value.split(' ')[0].split('-');
+                    var fromDate = new Date(dayFrom[0], dayFrom[1] - 1, dayFrom[2]);
+                    var date = moment(fromDate).format('YYYY-MM-DD');
+                    var toDate;
+                    var dateMomentTo;
+                    if (due_date_data != null && due_date_data.value != '') {
+                        dayTo = due_date_data.value.split(' ')[0].split('-');
+                        toDate = new Date(dayTo[0], dayTo[1] - 1, dayTo[2]);
+                        document.querySelector('#due_date').value = moment(toDate).format('YYYY-MM-DD');
+                        dateMomentTo = moment(toDate).format('YYYY-MM-DD');
+                    }
+                    document.querySelector('#created_at').value = date;
+                    document.querySelector('#due_date').setAttribute("min", date);
+                    if (fromDate > toDate) {
+                        document.querySelector('#due_date').value = date;
+                    }
+                }
             }
-            bir = document.querySelector('#update_at_data');
-            if (bir != null && bir.value != '') {
-                var day = bir.value.split(' ')[0].split('-');
-                var time = bir.value.split(' ')[1].split(':');
-                document.querySelector('#update_at').value = moment(new Date(day[0], day[1] - 1, day[2])).format('YYYY-MM-DD');
-                document.querySelector('#update_at').max = new Date().toISOString().split("T")[0];
-            }
+            window.addEventListener('DOMContentLoaded', event => {
+                onChangeFromDate();
+            });
         </script>
         <script src="js/scripts.js"></script>
     </body>

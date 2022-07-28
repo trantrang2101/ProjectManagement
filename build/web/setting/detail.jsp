@@ -44,11 +44,7 @@
                             <form action="setting" method="POST">
                                 <div class="card card-waves p-4 mb-4 mt-5">
                                     <div class="row align-items-end">
-                                        <div class="mb-3 col-6">
-                                            <label for="id" class="form-label">Setting ID</label>
-                                            <input type="text" class="form-control border-0 border-bottom ${loginUser.getRole_id()>1?'bg-primary-soft':'bg-transparent'}" value="${setting!=null?setting.setting_id:''}" disabled="">
-                                            <input type="text" name="id" class="form-control" value="${setting!=null?setting.setting_id:''}" hidden="">
-                                        </div>
+                                        <input type="text" name="id" class="form-control" value="${setting!=null?setting.setting_id:''}" hidden="">
                                         <div class="mb-3 col-6">
                                             <label for="typeIDDetail" class="form-label">Type</label>
                                             <select ${loginUser.getRole_id()<2?"":"disabled=''"} id="typeIDDetail" class="form-control col border-0 border-bottom ${loginUser.getRole_id()>1?'bg-primary-soft':'bg-transparent'}" name="typeID">

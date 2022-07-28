@@ -37,7 +37,7 @@ public class FunctionDAO extends ConnectJDBC {
 
     public Function getFunction(int id) {
         Function func = null;
-        String sql = "SELECT * from `studentmanagement`.`function` where function_id=" + id;
+        String sql = "SELECT * from `function` where function_id=" + id;
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -62,8 +62,8 @@ public class FunctionDAO extends ConnectJDBC {
 
     public List<Function> getList(Integer teamId, Integer featureId, User login, String search, int start, int limit, String sort, boolean statusSort, Integer statusFilter, Integer complexityFilter, Integer priorityFilter, Integer ownerFilter) {
         List<Function> list = new ArrayList<>();
-        String sql = "CALL `studentmanagement`.search('\\'%" + search + "%\\'','studentmanagement','function','"
-                + (login.getRole_id() == 4 ? "and team_id = (select team_id from class_user where user_id=" + login.getUser_id() + " )" : "".concat(login.getRole_id() == 2 ? "and team_id in (select team_id from `studentmanagement`.`team` where class_id in (select class_id from class where subject_id in (select subject_id from subject where author_id=" + login.getUser_id() + ")))" : "").concat(login.getRole_id() == 3 ? "and team_id in (select team_id from `studentmanagement`.`team` where class_id in (select class_id from class where trainer_id in (select trainer_id from class where trainer_id=" + login.getUser_id() + ")))" : ""))
+        String sql = "CALL search('\\'%" + search + "%\\'','function','"
+                + (login.getRole_id() == 4 ? "and team_id = (select team_id from class_user where user_id=" + login.getUser_id() + " )" : "".concat(login.getRole_id() == 2 ? "and team_id in (select team_id from `team` where class_id in (select class_id from class where subject_id in (select subject_id from subject where author_id=" + login.getUser_id() + ")))" : "").concat(login.getRole_id() == 3 ? "and team_id in (select team_id from `team` where class_id in (select class_id from class where trainer_id in (select trainer_id from class where trainer_id=" + login.getUser_id() + ")))" : ""))
                 + (teamId == null || teamId == 0 ? "" : " and team_id = " + teamId)
                 + (featureId == null ? "" : " and feature_id = " + featureId)
                 + (complexityFilter == null ? "" : " and complexity_id = " + complexityFilter)
@@ -102,7 +102,7 @@ public class FunctionDAO extends ConnectJDBC {
 
     public int addFunction(Function func) {
         int id = -1;
-        String sql = "insert into `studentmanagement`.`function` (`function_id`, `team_id`,`function_name`,`feature_id`, `access_roles`, `description`, `complexity_id`,`owner_id`,`priority`,`status`)\n"
+        String sql = "insert into `function` (`function_id`, `team_id`,`function_name`,`feature_id`, `access_roles`, `description`, `complexity_id`,`owner_id`,`priority`,`status`)\n"
                 + "values (?,?,?, ?, ?, ?, ?,?,?,?);";
         try {
             Connection conn = getConnection();
@@ -119,7 +119,7 @@ public class FunctionDAO extends ConnectJDBC {
             pre.setInt(10, func.isStatus());
 
             if (pre.executeUpdate() > 0) {
-                ResultSet rs = getData("SELECT function_id from `studentmanagement`.`function` order by function_id desc limit 1");
+                ResultSet rs = getData("SELECT function_id from `function` order by function_id desc limit 1");
                 if (rs.next()) {
                     id = rs.getInt(1);
                 }
@@ -133,7 +133,7 @@ public class FunctionDAO extends ConnectJDBC {
 
     public int checkAddFunction(String team_id, Integer feature_id, String function_name) {
         int check = -1;
-        String sql = "SELECT * FROM studentmanagement.function where team_id = '" + team_id
+        String sql = "SELECT * from `function` where team_id = '" + team_id
                 + (feature_id == null || feature_id == 0 ? "" : " and feature_id = " + feature_id)
                 + "'and function_name='" + function_name + "'";
 
@@ -151,7 +151,7 @@ public class FunctionDAO extends ConnectJDBC {
 
     public boolean updateStatus(int funcId, int status) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`function` \n"
+        String sql = "UPDATE `function` \n"
                 + "SET status=?\n"
                 + "where function_id=?";
         try {
@@ -169,7 +169,7 @@ public class FunctionDAO extends ConnectJDBC {
 
     public boolean updateFunction(Function func) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`function` \n"
+        String sql = "UPDATE `function` \n"
                 + "SET `team_id`=?,`function_name`=?, `feature_id`=?,`access_roles`=?, `description`=?, `complexity_id`=?, `owner_id`=?, `priority`=?, `status`=?\n"
                 + "where `function_id`=?";
         try {
@@ -196,7 +196,7 @@ public class FunctionDAO extends ConnectJDBC {
 
     public List<Function> getList(int featureId) {
         List<Function> list = new ArrayList<>();
-        String sql = "select * from `studentmanagement`.`function` where feature_Id = " + featureId + " and status in (select setting_id from studentmanagement.class_setting where setting_title != 'closed') and function_id not in (select function_id from `studentmanagement`.`tracking`)";
+        String sql = "select * from `function` where feature_Id = " + featureId + " and status in (select setting_id from class_setting where setting_title != 'closed') and function_id not in (select function_id from `tracking`)";
         ResultSet rs1 = getData(sql);
         try {
             while (rs1.next()) {

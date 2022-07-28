@@ -46,11 +46,7 @@
                             <form action="subjectSetting" method="POST">
                                 <div class="card card-waves p-4 mb-4 mt-5">
                                     <div class="row align-items-end">
-                                        <div class="mb-3 col">
-                                            <label for="id" class="form-label">Subject Setting ID</label>
-                                            <input type="text" class="form-control border-0 border-bottom ${loginUser.getRole_id()>2?'bg-primary-soft':'bg-transparent'}" value="${setting.setting_id}" disabled="">
-                                            <input type="text" name="id" class="form-control" value="${setting.setting_id}" hidden="">
-                                        </div>
+                                        <input type="text" name="id" class="form-control" value="${setting.setting_id}" hidden="">
                                         <div class="mb-3 col">
                                             <label for="subject_id" class="form-label border-0 border-bottom">Subject ID</label>
                                             <select ${loginUser.getRole_id()<3?"":"disabled=''"} name="subjectId" class="form-control border-0 border-bottom ${loginUser.getRole_id()>2?'bg-primary-soft':'bg-transparent'}" id="subjectId">
@@ -84,7 +80,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="mb-3 col-xl-9 col-md-6">
-                                            <label for="title" class="form-label">Subject Setting Title</label>
+                                            <label for="title" class="form-label">Subject Setting Title<span style="color: red">*</span></label>
                                             <input type="text" ${loginUser.getRole_id()<3?"":"disabled=''"} required="" name="title" class="form-control border-0 border-bottom ${loginUser.getRole_id()>2?'bg-primary-soft':'bg-transparent'}" value="${setting.setting_title}">
                                         </div>
                                         <div class="mb-3 col-xl-3 col-md-6 d-flex flex-column justify-content-between">
@@ -97,11 +93,11 @@
                                     </div>
                                     <div class="row">
                                         <div class="mb-3 col">
-                                            <label for="value" class="form-label">Setting Value</label>
+                                            <label for="value" class="form-label">Setting Value<span style="color: red">*</span></label>
                                             <input type="text" ${loginUser.getRole_id()<3?"":"disabled=''"} pattern="\d*" required="" name="value" class="form-control border-0 border-bottom ${loginUser.getRole_id()>2?'bg-primary-soft':'bg-transparent'}" value="${setting.setting_value}">
                                         </div>
                                         <div class="mb-3 col">
-                                            <label for="display" class="form-label">Display Order</label>
+                                            <label for="display" class="form-label">Display Order<span style="color: red">*</span></label>
                                             <input type="text" ${loginUser.getRole_id()<3?"":"disabled=''"} pattern="\d*" required="" name="display" class="form-control border-0 border-bottom ${loginUser.getRole_id()>2?'bg-primary-soft':'bg-transparent'}" value="${setting.display_order}">
                                         </div>
                                         <div class="mb-3 form-floating">

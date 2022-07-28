@@ -98,7 +98,6 @@
                                                 <th><button class="bg-transparent border-0" type="submit" name="sort" value="team_name"><b>Name</b><i class="fa-solid fa-sort"></i></button></th>
                                                 <th><button class="bg-transparent border-0" type="submit" name="sort" value="topic_code"><b>Topic Code</b><i class="fa-solid fa-sort"></i></button></th>
                                                 <th><button class="bg-transparent border-0" type="submit" name="sort" value="topic_name"><b>Topic Name</b><i class="fa-solid fa-sort"></i></button></th>
-                                                <th><button class="bg-transparent border-0" type="submit" name="sort" value="gitlab_url"><b>GitLab URL</b><i class="fa-solid fa-sort"></i></button></th>
                                                 <th><button class="bg-transparent border-0" type="submit" name="sort" value="status"><b>Status</b><i class="fa-solid fa-sort"></i></button></th>
                                                 <th>Actions</th>
                                             </tr>
@@ -117,7 +116,6 @@
                                                             <td>${team.getTeam_name()}</td>
                                                             <td>${team.getTopic_code()}</td>
                                                             <td>${team.getTopic_name()}</td>
-                                                            <td>${team.getGitlab_url()}</td>
                                                             <td class="text-center form-switch">
                                                                 <a data-bs-toggle="modal" href="#updateStatus${team.getTeam_id()}">
                                                                     <input class="form-check-input" type="checkbox" ${team.isStatus()?"checked":""}>

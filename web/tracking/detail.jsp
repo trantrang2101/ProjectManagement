@@ -52,7 +52,7 @@
                             <div class="card card-waves p-4 mb-4 mt-5">
                                 <div class="row align-items-end">
                                     <div class="mb-3 col-xl-3 col-md-6">
-                                        <label for="class" class="form-label">Class</label>
+                                        <label for="class" class="form-label">Class<span style="color: red">*</span></label>
                                         <c:choose>
                                             <c:when test="${trackingChoose != null}" >
                                                 <input type="text" required=""  class="form-control border-0 border-bottom ${loginUser.getRole_id()<4?'bg-primary-soft':'bg-transparent'}" value="${trackingChoose.getClassroom().getClass_code()}" disabled="">
@@ -78,7 +78,7 @@
                                         </c:choose>
                                     </div>
                                     <div class="mb-3 col-xl-3 col-md-6">
-                                        <label for="team" class="form-label">Team</label>
+                                        <label for="team" class="form-label">Team<span style="color: red">*</span></label>
                                         <c:choose>
                                             <c:when test="${trackingChoose != null}" >
                                                 <input type="text" required=""  class="form-control border-0 border-bottom ${loginUser.getRole_id()<4?'bg-primary-soft':'bg-transparent'}" value="${trackingChoose.getTeam().getTeam_name()}" disabled="">
@@ -105,7 +105,7 @@
                                         </c:choose>
                                     </div>
                                     <div class="mb-3 col-xl-6 col-md-12">
-                                        <label for="feature" class="form-label">Feature</label>
+                                        <label for="feature" class="form-label">Feature<span style="color: red">*</span></label>
                                         <c:choose>
                                             <c:when test="${trackingChoose != null}" >
                                                 <input type="text" required=""  class="form-control border-0 border-bottom ${loginUser.getRole_id()<4?'bg-primary-soft':'bg-transparent'}" value="${trackingChoose.getFeature().getFeature_name()}" disabled="">
@@ -137,7 +137,7 @@
                                     <form action="tracking" method="POST">
                                         <div class="row">
                                             <div class="mb-3 col-xl-3 col-md-12">
-                                                <label for="function" class="form-label">Function</label>
+                                                <label for="function" class="form-label">Function<span style="color: red">*</span></label>
                                                 <c:choose>
                                                     <c:when test="${trackingChoose != null}" >
                                                         <input type="hidden" name="class" value="${trackingChoose.getClassroom().getClass_id()}"/>
@@ -178,7 +178,7 @@
                                                 </select>
                                             </div>
                                             <div class="mb-3 col-xl-3 col-md-6">
-                                                <label for="milestone" class="form-label">Milestone</label>
+                                                <label for="milestone" class="form-label">Milestone<span style="color: red">*</span></label>
                                                 <c:choose>
                                                     <c:when test="${trackingChoose != null}" >
                                                         <input type="text" required=""  class="form-control border-0 border-bottom ${loginUser.getRole_id()<4?'bg-primary-soft':'bg-transparent'}" value="${trackingChoose.getMilestone().getMilestone_name()}" disabled="">

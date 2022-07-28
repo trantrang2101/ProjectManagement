@@ -37,7 +37,7 @@ public class ClassSettingDAO extends ConnectJDBC {
 
     public ClassSetting getClassSetting(int id) {
         ClassSetting set = null;
-        String sql = "SELECT * from `studentmanagement`.`class_setting` where setting_id=" + id;
+        String sql = "SELECT * from `class_setting` where setting_id=" + id;
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -60,7 +60,7 @@ public class ClassSettingDAO extends ConnectJDBC {
 
     public List<ClassSetting> getListStatus(int classId, int typeId) {
         List<ClassSetting> list = new ArrayList<>();
-        String sql = "SELECT * from `studentmanagement`.`class_setting` where class_id=" + classId + " and type_id=" + typeId;
+        String sql = "SELECT * from `class_setting` where class_id=" + classId + " and type_id=" + typeId;
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -83,7 +83,7 @@ public class ClassSettingDAO extends ConnectJDBC {
 
     public ClassSetting getClassSetting(int classId, int typeId, Integer settingValue) {
         ClassSetting set = null;
-        String sql = "SELECT * from `studentmanagement`.`class_setting` where class_id=" + classId + " and type_id=" + typeId + (settingValue == null ? "" : " and setting_value=" + settingValue);
+        String sql = "SELECT * from `class_setting` where class_id=" + classId + " and type_id=" + typeId + (settingValue == null ? "" : " and setting_value=" + settingValue);
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -106,7 +106,7 @@ public class ClassSettingDAO extends ConnectJDBC {
 
     public List<ClassSetting> getList(Integer type, Integer classId, String search, User login, int start, int limit, String sort, boolean statusSort, Integer statusFilter) {
         List<ClassSetting> list = new ArrayList<>();
-        String sql = "CALL `studentmanagement`.search('\\'%" + search + "%\\'','studentmanagement','class_setting','"
+        String sql = "CALL search('\\'%" + search + "%\\'','class_setting','"
                 + "" + (statusFilter == null ? "" : " and status= " + statusFilter)
                 + (type == null || type == 0 ? "" : " and type_id=" + type)
                 + (classId == 0 ? "" : " and class_id = " + classId) + (login.getRole_id() == 2 ? " and class_id in (select class_id from class where author_id=" + login.getUser_id() + ")" : "") + "'," + start + "," + limit + ",'" + sort + "'," + statusSort + ")";
@@ -136,7 +136,7 @@ public class ClassSettingDAO extends ConnectJDBC {
 
     public int checkAddClassSetting(int type_id, int class_id, int value, boolean status) {
         int check = -1;
-        String sql = "SELECT * from `studentmanagement`.`class_setting` where class_id=" + class_id + " type_id =" + type_id + " and setting_value =" + value + " and status=" + status;
+        String sql = "SELECT * from `class_setting` where class_id=" + class_id + " type_id =" + type_id + " and setting_value =" + value + " and status=" + status;
         ResultSet rs = getData(sql);
         try {
             if (rs.next()) {
@@ -151,7 +151,7 @@ public class ClassSettingDAO extends ConnectJDBC {
 
     public int addClassSetting(ClassSetting s) {
         int check = -1;
-        String sql = "INSERT INTO `studentmanagement`.`class_setting` (`class_id`, `type_id`, `setting_title`, `setting_value`, `display_order`, `description`, `status`) VALUES (?, ?, ?, ?, ?, ?, ?);";
+        String sql = "INSERT INTO `class_setting` (`class_id`, `type_id`, `setting_title`, `setting_value`, `display_order`, `description`, `status`) VALUES (?, ?, ?, ?, ?, ?, ?);";
         try {
             Connection conn = getConnection();
             PreparedStatement pre = conn.prepareStatement(sql);
@@ -163,7 +163,7 @@ public class ClassSettingDAO extends ConnectJDBC {
             pre.setString(6, s.getDescription());
             pre.setBoolean(7, s.isStatus());
             if (pre.executeUpdate() > 0) {
-                ResultSet rs = getData("SELECT setting_id from `studentmanagement`.`class_setting` order by setting_id desc limit 1");
+                ResultSet rs = getData("SELECT setting_id from `class_setting` order by setting_id desc limit 1");
                 if (rs.next()) {
                     check = rs.getInt(1);
                 }
@@ -177,7 +177,7 @@ public class ClassSettingDAO extends ConnectJDBC {
 
     public boolean updateStatus(int setId, boolean status) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`class_setting` \n"
+        String sql = "UPDATE `class_setting` \n"
                 + "SET status=?\n"
                 + "where setting_id=?";
         try {
@@ -195,7 +195,7 @@ public class ClassSettingDAO extends ConnectJDBC {
 
     public boolean updateClassSetting(ClassSetting s) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`class_setting` \n"
+        String sql = "UPDATE `class_setting` \n"
                 + "SET type_id=?, setting_title=?,setting_value=?, display_order=?, description=?, status=?,class_id=?\n"
                 + "where setting_id=?";
         try {

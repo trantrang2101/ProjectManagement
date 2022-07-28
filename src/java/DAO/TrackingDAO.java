@@ -35,7 +35,7 @@ public class TrackingDAO extends Utils.ConnectJDBC {
 
     public boolean updateTracking(Tracking c) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`tracking` "
+        String sql = "UPDATE `tracking` "
                 + "SET `tracking_note`=?,`status`=?,assignee_id=? WHERE (`tracking_id`=?);";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
@@ -53,7 +53,7 @@ public class TrackingDAO extends Utils.ConnectJDBC {
 
     public boolean updateChangeStatus(int id, int status) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`tracking` SET `status`=? WHERE (`tracking_id`=?);";
+        String sql = "UPDATE `tracking` SET `status`=? WHERE (`tracking_id`=?);";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
             pre.setInt(1, status);
@@ -68,7 +68,7 @@ public class TrackingDAO extends Utils.ConnectJDBC {
 
     public boolean addTracking(Tracking c) {
         boolean check = false;
-        String sql = "INSERT INTO `studentmanagement`.`tracking` (`milestone_id`,`function_id`,`assigner_id`,`assignee_id`,`tracking_note`,`status`)"
+        String sql = "INSERT INTO `tracking` (`milestone_id`,`function_id`,`assigner_id`,`assignee_id`,`tracking_note`,`status`)"
                 + "VALUES (?,?,?,?,?,?);";
         try {
             PreparedStatement pre = conn.prepareStatement(sql);
@@ -88,7 +88,7 @@ public class TrackingDAO extends Utils.ConnectJDBC {
 
     public Tracking checkTracking(int milestone_id, int function_id) {
         Tracking tracking = null;
-        String sql = "select * from `studentmanagement`.`tracking` where milestone_id =" + milestone_id + " and function_id =" + function_id;
+        String sql = "select * from `tracking` where milestone_id =" + milestone_id + " and function_id =" + function_id;
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -106,7 +106,7 @@ public class TrackingDAO extends Utils.ConnectJDBC {
 
     public Tracking getTracking(int tracking_id) {
         Tracking tracking = null;
-        String sql = "select * from `studentmanagement`.`tracking` where tracking_id=" + tracking_id;
+        String sql = "select * from `tracking` where tracking_id=" + tracking_id;
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -125,10 +125,10 @@ public class TrackingDAO extends Utils.ConnectJDBC {
 
     public List<Tracking> getList(Integer type, Integer statusChoose, Integer assignee, Integer function, Integer feature, int start, int limit, User user, String sort, boolean statusSort,Boolean notClosed) {
         List<Tracking> list = new ArrayList<>();
-        String sql = "CALL `studentmanagement`.search('\\'%%\\'','studentmanagement','tracking','" + (assignee != null ? " and assignee_id=" + assignee : "") + (notClosed==null?"":" and status in (select setting_id from studentmanagement.class_setting where setting_title != \\'closed\\')")
-                + (type != null ? " and function_id in (select function_id from studentmanagement.function where team_id=" + type + ")" : "") + (statusChoose != null ? " and status = " + statusChoose : "")
-                + (user.getRole_id() == 1 ? "" : user.getRole_id() == 2 ? " and milestone_id in (select milestone_id from `studentmanagement`.`milestone`,`studentmanagement`.`class` where milestone.class_id = class.class_id and trainer_id=" + user.getUser_id() + ")" : (user.getRole_id() == 4 ? " and function_id in (select function_id from `studentmanagement`.`function`,`studentmanagement`.`class_user` where class_user.team_id=function.team_id and user_id=" + user.getUser_id() + ")" : " and milestone_id in (select milestone_id from `studentmanagement`.`milestone`,`studentmanagement`.`class`,`studentmanagement`.`subject` where class.class_id=milestone.class_id and class.subject_id=subject.subject_id and author_id=" + user.getUser_id() + ")"))
-                + (function != null ? " and function_id=" + function : "") + (feature != null ? " and function_id in (select function_id from `studentmanagement`.`function` where feature_id=" + feature + ")" : "")
+        String sql = "CALL search('\\'%%\\'','tracking','" + (assignee != null ? " and assignee_id=" + assignee : "") + (notClosed==null?"":" and status in (select setting_id from class_setting where setting_title != \\'closed\\')")
+                + (type != null ? " and function_id in (select function_id from `function` where team_id=" + type + ")" : "") + (statusChoose != null ? " and status = " + statusChoose : "")
+                + (user.getRole_id() == 1 ? "" : user.getRole_id() == 2 ? " and milestone_id in (select milestone_id from `milestone`,`class` where milestone.class_id = class.class_id and trainer_id=" + user.getUser_id() + ")" : (user.getRole_id() == 4 ? " and function_id in (select function_id from `function`,`class_user` where class_user.team_id=function.team_id and user_id=" + user.getUser_id() + ")" : " and milestone_id in (select milestone_id from `milestone`,`class`,`subject` where class.class_id=milestone.class_id and class.subject_id=subject.subject_id and author_id=" + user.getUser_id() + ")"))
+                + (function != null ? " and function_id=" + function : "") + (feature != null ? " and function_id in (select function_id from `function` where feature_id=" + feature + ")" : "")
                 + "'," + start + "," + limit + ",'" + sort + "'," + statusSort + ")";
         ResultSet rs1 = getData(sql);
         try {

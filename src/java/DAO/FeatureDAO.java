@@ -37,7 +37,7 @@ public class FeatureDAO extends ConnectJDBC {
 
     public Feature getFeature(Integer id) {
         Feature fea = null;
-        String sql = "SELECT * from `studentmanagement`.`feature` where feature_id=" + id;
+        String sql = "SELECT * from `feature` where feature_id=" + id;
         ResultSet rs = getData(sql);
         try {
             while (rs.next()) {
@@ -57,7 +57,7 @@ public class FeatureDAO extends ConnectJDBC {
 
     public List<Feature> getListNot(int team_id) {
         List<Feature> list = new ArrayList<>();
-        String sql = "select * from `studentmanagement`.`feature` where team_id="+team_id+" and status = 1 and feature_id in (select distinct feature_id from `studentmanagement`.`function` where function_id in (select function_id from `studentmanagement`.`tracking`))";
+        String sql = "select * from `feature` where team_id="+team_id+" and status = 1 and feature_id in (select distinct feature_id from `function` where function_id in (select function_id from `tracking`))";
         ResultSet rs1 = getData(sql);
         try {
             while (rs1.next()) {
@@ -80,7 +80,7 @@ public class FeatureDAO extends ConnectJDBC {
     
     public List<Feature> getList(int team_id) {
         List<Feature> list = new ArrayList<>();
-        String sql = "select * from `studentmanagement`.`feature` where team_id="+team_id+" and status = 1 and feature_id in (select feature_id from `studentmanagement`.`function` where function_id not in (select function_id from `studentmanagement`.`tracking`))";
+        String sql = "select * from `feature` where team_id="+team_id+" and status = 1 and feature_id in (select feature_id from `function` where function_id not in (select function_id from `tracking`))";
         ResultSet rs1 = getData(sql);
         try {
             while (rs1.next()) {
@@ -103,8 +103,8 @@ public class FeatureDAO extends ConnectJDBC {
 
     public List<Feature> getList(Integer team_id, User login, String search, int start, int limit, String sort, boolean statusSort, Boolean statusFilter) {
         List<Feature> list = new ArrayList<>();
-        String sql = "CALL `studentmanagement`.search('\\'%" + search + "%\\'','studentmanagement','feature','"
-                + (login.getRole_id() == 4 ? "and team_id = (select team_id from class_user where user_id=" + login.getUser_id() + " )" : "".concat(login.getRole_id() == 2 ? "and team_id in (select team_id from `studentmanagement`.`team` where class_id in (select class_id from class where subject_id in (select subject_id from subject where author_id=" + login.getUser_id() + ")))" : "").concat(login.getRole_id() == 3 ? "and team_id in (select team_id from `studentmanagement`.`team` where class_id in (select class_id from class where trainer_id in (select trainer_id from class where trainer_id=" + login.getUser_id() + ")))" : ""))
+        String sql = "CALL search('\\'%" + search + "%\\'','feature','"
+                + (login.getRole_id() == 4 ? "and team_id = (select team_id from class_user where user_id=" + login.getUser_id() + " )" : "".concat(login.getRole_id() == 2 ? "and team_id in (select team_id from `team` where class_id in (select class_id from class where subject_id in (select subject_id from subject where author_id=" + login.getUser_id() + ")))" : "").concat(login.getRole_id() == 3 ? "and team_id in (select team_id from `team` where class_id in (select class_id from class where trainer_id in (select trainer_id from class where trainer_id=" + login.getUser_id() + ")))" : ""))
                 + (team_id == 0 ? "" : " and team_id = " + team_id)
                 + (statusFilter == null ? "" : " and status = " + statusFilter)
                 + "'," + start + "," + limit + ",'" + sort + "'," + statusSort + ")";
@@ -134,7 +134,7 @@ public class FeatureDAO extends ConnectJDBC {
 
     public int addFeature(Feature feature) {
         int id = -1;
-        String sql = "INSERT INTO `studentmanagement`.`feature` (`feature_id`, `team_id`, `feature_name`,`description`, `status`) VALUES (?, ?,?, ?, ?);";
+        String sql = "INSERT INTO `feature` (`feature_id`, `team_id`, `feature_name`,`description`, `status`) VALUES (?, ?,?, ?, ?);";
         try {
             Connection conn = getConnection();
             PreparedStatement pre = conn.prepareStatement(sql);
@@ -145,7 +145,7 @@ public class FeatureDAO extends ConnectJDBC {
             pre.setBoolean(5, feature.isStatus());
 
             if (pre.executeUpdate() > 0) {
-                ResultSet rs = getData("SELECT feature_id from `studentmanagement`.`feature` order by feature_id desc limit 1");
+                ResultSet rs = getData("SELECT feature_id from `feature` order by feature_id desc limit 1");
                 if (rs.next()) {
                     id = rs.getInt(1);
                 }
@@ -159,7 +159,7 @@ public class FeatureDAO extends ConnectJDBC {
 
     public int checkAddFeature(int teamId, String featureName) {
         int check = -1;
-        String sql = "SELECT * FROM studentmanagement.feature where team_id = '" + teamId + "'and feature_name='" + featureName + "'";
+        String sql = "SELECT * FROM feature where team_id = '" + teamId + "'and feature_name='" + featureName + "'";
 
         try {
             ResultSet rs = getData(sql);
@@ -175,7 +175,7 @@ public class FeatureDAO extends ConnectJDBC {
 
     public boolean updateStatus(int featureId, boolean status) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`feature` \n"
+        String sql = "UPDATE `feature` \n"
                 + "SET status=?\n"
                 + "where feature_id=?";
         try {
@@ -193,7 +193,7 @@ public class FeatureDAO extends ConnectJDBC {
 
     public boolean updateFeature(Feature s) {
         boolean check = false;
-        String sql = "UPDATE `studentmanagement`.`feature` \n"
+        String sql = "UPDATE `feature` \n"
                 + "            SET `team_id`=?,`feature_name`=?,`status`=?,`description`=?\n"
                 + "             where `feature_id`=?";
         try {
